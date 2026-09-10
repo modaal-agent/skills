@@ -1,0 +1,12 @@
+{
+  "name": "modaal-skills",
+  "description": "Practices for working in a repository with a coding agent: prose that states facts and actions, the manual spec-driven flow, repository setup and git discipline. Carries every skill under skills/.",
+  "author": {
+    "name": "Ivan Misuno",
+    "url": "https://github.com/modaal-agent/skills"
+  },
+  "homepage": "https://github.com/modaal-agent/skills",
+  "repository": "https://github.com/modaal-agent/skills",
+  "license": "MIT",
+  "keywords": ["skills", "writing", "spec-driven-development", "git", "code-review", "agents"]
+}

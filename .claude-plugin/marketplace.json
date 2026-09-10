@@ -1,0 +1,19 @@
+{
+  "name": "modaal-skills",
+  "owner": {
+    "name": "modaal-agent",
+    "url": "https://github.com/modaal-agent"
+  },
+  "metadata": {
+    "description": "The agent skills used at Modaal: writing style, spec-driven development, repository initialization and git discipline.",
+    "version": "1"
+  },
+  "plugins": [
+    {
+      "name": "modaal-skills",
+      "source": "./",
+      "description": "Practices for working in a repository with a coding agent: prose that states facts and actions, the manual spec-driven flow, repository setup and git discipline.",
+      "category": "productivity"
+    }
+  ]
+}

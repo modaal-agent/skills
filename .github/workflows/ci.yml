@@ -1,0 +1,49 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  # ── Rules lane ───────────────────────────────────────────────────
+  # AGENTS.md and CLAUDE.md are one file kept in two places, so that an agent
+  # reading either gets the same rules. Markdown and `cmp` only — no toolchain,
+  # no dependency resolution — so it reports in seconds.
+  rules:
+    name: Rules files (AGENTS.md == CLAUDE.md)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: AGENTS.md and CLAUDE.md are byte-identical
+        # Fix a failure with `cp AGENTS.md CLAUDE.md`.
+        run: cmp AGENTS.md CLAUDE.md
+
+  # ── Skills lane ──────────────────────────────────────────────────
+  # Every skill under skills/, and the two .claude-plugin/ manifests that
+  # publish them: frontmatter each install channel can parse, bodies inside the
+  # documented budgets, links that resolve, and a README index that lists every
+  # skill directory. Markdown and JSON through grep, awk and python3.
+  skills:
+    name: Agent skills (skills/ and .claude-plugin/)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Every skill is one all four channels can install
+        # `scripts/check-skills.sh --self-test` reds each check against a seeded
+        # violation; run it locally when editing a check.
+        run: scripts/check-skills.sh
+
+      - name: Job summary
+        if: always()
+        run: |
+          {
+            echo "### modaal-agent/skills — checks"
+            echo ""
+            echo "- \`rules\`: AGENTS.md and CLAUDE.md byte-identical"
+            echo "- \`skills\`: frontmatter, budgets, links, manifests, README index"
+          } >> "$GITHUB_STEP_SUMMARY"
