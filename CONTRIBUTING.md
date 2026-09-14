@@ -15,6 +15,11 @@ in: no private project names, no internal file paths, no references to internal 
 or their numbering. Findings and measurements are welcome; describe them without naming where they
 came from.
 
+Every reference has to resolve for that reader: an internal cross-reference at the same commit, an
+external one to a public source. A spec lists its external references in an `External references`
+section; a reference to private work is named only there, and redacted before the commit carrying it
+is pushed. [AGENTS.md](AGENTS.md) §"Public-facing text is hermetic" states the rules.
+
 ## Repository layout
 
 ```

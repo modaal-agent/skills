@@ -181,11 +181,35 @@ Habits to avoid (common LLM-isms):
   decisions and what stays open. Written before the change and left in place after it, as the record
   of why. It never becomes the place a *rule* is stated — that is here.
 
+## Public-facing text is hermetic
+
+The origin is public. Everything pushed to it — files on every branch, commit messages, pull-request
+titles, bodies and review comments — is readable by anyone, and stays readable through forks, clones,
+cached commit views and pull requests after a history rewrite. A reader holding this repository and
+the public internet must be able to resolve every reference in it.
+
+- **No reference to a private repository or private work**, in any file or commit message: no
+  private repository or project name, internal path, internal document or internal numbering. State
+  a finding from private work by what was measured and when, without naming where. A skill is read
+  by strangers on their own codebases, so `skills/` is where a leak costs most.
+- **Every internal cross-reference resolves at the same commit.** A `§N.M` resolves to a heading or
+  a numbered definition in the same document, `file:line` to that line, and "spec NNN §N" to a
+  heading in `specs/NNN-<slug>/spec.md`. "§5.4 from spec-24" fails in a repository with no
+  `specs/024-*`, and so does a commit message citing a spec section its commit's tree lacks.
+- **Every external reference is to a public source**: a URL or an `owner/repository` path a reader
+  can open, pinned to a commit, page revision or version where the text cites a line, a count or a
+  quotation from it.
+- **Every spec lists its external references in an `External references` section**, one row per
+  reference: an id (`E1`, `E2` …), what it is, whether it is public, the URL with its pin or the
+  redaction text, and the sections citing it. A section of an external document is cited after its
+  id: `E16 §11`.
+- **A private reference is named only in that section, and the rest of the spec cites its id.**
+  Before the commit carrying it is pushed, replace the row's name and location with a redaction text
+  that starts `*Redacted:*` and says what the reference is and when it was read. Redacting at merge
+  is too late: the branch's commits are already public.
+
 ## Scope
 
-- **Nothing under `skills/` names a private repository, an internal planning document or an internal
-  path.** CONTRIBUTING.md's first rule covers every file here; a skill is read by strangers on their
-  own codebases, so it is where a leak costs most.
 - A skill that duplicates one already published beside the code it documents belongs in that
   repository, not this one. README.md lists the two that live elsewhere and why.
 - There are no release tags and no release assets. A change reaches adopters by landing on `main`;
