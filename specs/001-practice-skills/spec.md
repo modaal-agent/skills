@@ -1,13 +1,13 @@
 # 001 — Four practice skills: writing style, spec-driven development, repository initialization, git discipline
 
-**Status:** Written 2026-09-11, revised in place 2026-09-14. Phases 1–4 landed 2026-09-14; phases
-5–6 not implemented (§9.1). **Baseline:** `main` at `1753a20`. **Obsoletes:** nothing.
+**Status:** Written 2026-09-11, revised in place 2026-09-14. Phases 1–5 landed 2026-09-14; phase 6
+not implemented (§9.1). **Baseline:** `main` at `1753a20`. **Obsoletes:** nothing.
 
 **Relates to:**
 
 - [AGENTS.md](../../AGENTS.md) — the sections "Writing style", "Git and pull requests" (before
-  phase 4, "Git state" and "Changes reach `main` through a pull request"), "Specs are a decision
-  record" and "A skill is written for an agent in someone else's repository". The first three are
+  phase 4, "Git state" and "Changes reach `main` through a pull request"), "Specs" (before phase 5,
+  "Specs are a decision record") and "A skill is written for an agent in someone else's repository". The first three are
   the source material for three of the skills; §2.3
   of this spec is the rule that keeps a skill and the section it came from from becoming two answers
   to one question.
@@ -423,8 +423,9 @@ writing-style section was 38 lines, the two git sections 36, the spec section 15
 together. The twelve rules §3.2 plans were drafted as a 34-line block. Estimates for the sections as
 the skills write them: 35–45 lines for `writing-style`, 30–40 for `git-discipline`, 15–25 for
 `spec-driven-development`. No check holds these numbers; §12.10 asks for one. As landed, the
-`writing-style` block is 35 lines, and the `git-discipline` block 23, or 22 in this repository,
-which leaves one decision line out.
+`writing-style` block is 35 lines, the `git-discipline` block 23, or 22 in this repository, which
+leaves one decision line out, and the `spec-driven-development` block 20: 77 lines in this
+repository, where the three sections they replaced were 89.
 
 ---
 
@@ -609,6 +610,23 @@ The flow measured in §1.3, stated as steps an agent performs:
   section holds and one real example line per section, taken from the four specs §1.3 measured,
   and the `External references` section with one public row and one redacted row (§13.2).
 
+**As landed in phase 5:**
+
+- `SKILL.md`, 150 lines: the 20-line block, which states steps 1, 2, 5 and 7 of §4.1, the definition
+  of done, follow-up files, what a new spec obsoletes, and step 9 in one bullet; the six steps that
+  write it; the flow in eight steps; §"References a reader can follow", which is step 9 in full,
+  with the visibility command and the id-against-row check before a push; a review checklist; and
+  §"What stays manual", which is §4.3.
+- `references/spec-skeleton.md`, 178 lines: the skeleton in one fenced block, then each part with
+  what it holds, an example and what to leave out, ending with `External references` and its public
+  and redacted rows.
+
+*Revised 2026-09-14, phase 5:* the examples were to be real lines from the four specs §1.3 measured.
+§2.2 keeps those repositories out of skill text, so every example describes one invented change, an
+offline sync feature. Two additions: a line reference into the repository names the commit it was
+read at, which is how this spec's own `AGENTS.md` line references went stale in phases 3–5; and a
+review checklist, since §2.5 names reviewing a spec as a task that invokes the skill.
+
 ### 4.3 The honest limit
 
 This flow is manual. Nothing in it is enforced by a tool: no template generator, no numbering check,
@@ -642,9 +660,10 @@ rule a phase's result edits the plan in place while the feature is in progress, 
 wording stays in `git log -p`. A reader of a finished spec gets the notes on important overturned
 decisions in the document, and finds minor revisions only in git history.
 
-**In this repository.** `AGENTS.md` §"Specs are a decision record" adopted the rule on 2026-09-14, before phase 1, with
-the definition of done written against `main`. This spec was revised in place under it on the same
-day. Phase 5 replaces that section with the skill's block (§9).
+**In this repository.** `AGENTS.md`, in a section then headed "Specs are a decision record", adopted
+the rule on 2026-09-14, before phase 1, with the definition of done written against `main`. This
+spec was revised in place under it on the same day. Phase 5 replaced that section with the skill's
+block, now `AGENTS.md` §"Specs", and moved the `main` definition below the skill's line.
 
 ---
 
@@ -1007,7 +1026,7 @@ owns a shared term is written before the skills that write that term.
 | 2 | `skills/repository-init/scripts/` — both variants, S12 and S13 | The body written in phase 1 is the specification the two scripts are measured against. Splitting it out keeps the Markdown review and the code review in separate commits. |
 | 3 | `skills/writing-style/`, and `AGENTS.md` §"Writing style" here replaced by its block | The first consumer of §2.4's four-step edit, and the rules the remaining two are written under. |
 | 4 | `skills/git-discipline/`, and the `AGENTS.md` sections "Git state" and "Changes reach `main` through a pull request" here replaced by its block under `## Git and pull requests` | The shortest; consumes the agent rules file and owns "the default branch". |
-| 5 | `skills/spec-driven-development/`, and `AGENTS.md` §"Specs are a decision record" here replaced by its block | Consumes both terms above and owns the spec directory. |
+| 5 | `skills/spec-driven-development/`, and the `AGENTS.md` section "Specs are a decision record" here replaced by its block | Consumes both terms above and owns the spec directory. |
 | 6 | README rows, CONTRIBUTING mention, S10, S11, S15, S16 and their self-test cases | The index and the two cross-skill checks, once there are four names to check; the two spec checks, once every spec in the repository has an `External references` section. |
 
 §5.2 has `repository-init` naming the other three in its last step, which looks like a cycle against
@@ -1015,8 +1034,8 @@ this order and is not: that reference is a name and a one-line statement of what
 (§2.3), so phase 1 needs no text from phases 2–5.
 
 Each phase records in this spec what it landed and where it departed from the plan, by editing the
-plan in place, per §4.1 step 7 and `AGENTS.md` §"Specs are a decision record", the rule this spec
-is itself written under.
+plan in place, per §4.1 step 7 and `AGENTS.md` §"Specs", the rule this spec is itself written
+under.
 Phase 6's commit closes the feature (§4.4); after it, this spec takes additions only.
 
 Phases 3–5 make this repository's `AGENTS.md` the first install of each section (AGENTS.md §"The
@@ -1045,6 +1064,7 @@ keeps the README's closing edits.
 | 2 | 2026-09-14: `scripts/init-repo.sh` and `init-repo.ps1`, `skills/repository-init/SKILL.md` §"Run the script" and `allowed-tools`, S12 and S13 with their self-test cases, and the SECURITY, CONTRIBUTING, README, `AGENTS.md` and `ci.yml` edits. Before the commit, S12 and `--self-test` ran against PowerShell 7.4.20 on arm64; CI's runner has 7.6.5 (§12.9) | `--holder`, `--skip-existing`, `--path .` for `--here`, and no check or job under `--agent agents` (§5.5); S12's matrix and its check, rerun and skip rules (§8.4); S13 parses the templates (§8.5); §12.7 and §12.9 resolved |
 | 3 | 2026-09-14: `skills/writing-style/SKILL.md` (106 lines), `references/habits.md` (162), `references/tells.md` (96), `references/ai-tells.md` (119); the 35-line block in `AGENTS.md` and `CLAUDE.md` with this repository's two lines below it; the README row; `CONTRIBUTING.md` §"Licensing" on files under another license | `references/ai-tells.md` under CC BY-SA 4.0, and thirteen tells (§3.4, §12.11); the review's fourth step (§3.3); line references into `AGENTS.md` outside §1 replaced by headings (Relates to, §2.5, §3, §4.4, §9, D5) |
 | 4 | 2026-09-14: `skills/git-discipline/SKILL.md` (108 lines); the block in `AGENTS.md` and `CLAUDE.md`, replacing two sections, with this repository's lines below it; the README row | the fourth rule's branching sentence, and the search for other git sections (§6.1); this repository's branch-naming decision left open for the user (§6.1) |
+| 5 | 2026-09-14: `skills/spec-driven-development/SKILL.md` (150 lines), `references/spec-skeleton.md` (178); the 20-line block in `AGENTS.md` and `CLAUDE.md`, replacing "Specs are a decision record", with this repository's three lines below it; the README row | invented examples, commit-pinned line references and the review checklist (§4.2); §4.4's `AGENTS.md` section renamed to "Specs" |
 
 ---
 
@@ -1347,7 +1367,8 @@ every reference in it.
   section every spec carries, the redaction before push, and the `AGENTS.md` section. Landed in the
   same commit.
 - **`spec-driven-development`:** §4.1 step 9, the `## Specs` section (§4.1 step 8), and the
-  `External references` section in `references/spec-skeleton.md` (§4.2). Phase 5.
+  `External references` section in `references/spec-skeleton.md` (§4.2). Landed in phase 5, with the
+  redaction before push in the block's last bullet.
 - **This spec:** §14 is its register, and §1.8 and §3 cite sources by register id.
 - **Checks:** S15 and S16 (§8.7, §8.8), phase 6.
 

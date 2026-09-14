@@ -117,21 +117,35 @@ In this repository:
   code, and a skill is code here. No tag gates it and no release carries it: the install channels
   read this repository, so an edit under `skills/` reaches adopters the moment it lands on `main`.
 
-## Specs are a decision record
+## Specs
 
-- **While the feature is being worked on, a spec may be edited in place** to keep the plan current.
-  Where later work overturns an important earlier decision, leave a short note saying what it
-  replaced and why.
-- **Once the feature is done, a spec is amended by addition.** A feature is done when the commit
-  that lands its last planned phase reaches `main`. An addition that supersedes an existing claim
-  names it by section, and the superseded section takes a line pointing forward to the addition.
-- **A closed spec may take a follow-up file beside it** instead of an appended section —
-  `specs/001-<slug>/followup-<topic>.md`. The rule inside it is the same: additions only, and it
-  names by section what it supersedes.
-- **A new spec names what it obsoletes**, by number and section ("obsoletes 001 §4.6").
-- **Writing a spec is not authorization to implement it.** When the task is a spec, produce only the
-  spec document — no skill, script or workflow edit, not even the one line that looks ready. When it
-  is written, stop and ask.
+- **Write a spec for a change too big to describe in a commit message**, in
+  `specs/NNN-slug/spec.md`: `NNN` counts up from `001`, and the slug names the feature.
+- **Writing a spec is not authorization to implement it.** When the task is a spec, write the
+  document alone, then stop and ask.
+- **While the feature is in progress, edit the spec in place** to keep the plan current. Where later
+  work overturns an important decision, leave a short note saying what it replaced and why.
+- **Once the feature is done, amend the spec by addition.** A feature is done when the commit that
+  lands its last planned phase reaches the default branch. An addition that supersedes a claim names
+  that claim's section, and the section takes a line pointing to the addition. A closed spec may
+  take a follow-up file beside it instead, `followup-<topic>.md`, under the same rule.
+- **A new spec names what it obsoletes**, by number and section: "obsoletes 001 §4.6".
+- **Every reference in a spec resolves for its reader.** A section reference points at a heading in
+  the same file. An external reference is to a public source, pinned where the spec cites a line, a
+  count or a quotation, and has a row in the spec's `External references` section. In a public
+  repository, a private reference is named only in that section, and redacted before the commit
+  carrying it is pushed.
+
+*Maintained by the `spec-driven-development` skill down to this line. This repository's own lines go below.*
+
+In this repository:
+
+- **The default branch is `main`**, so a feature is done when the commit landing its last planned
+  phase reaches `main`.
+- **When the task is a spec, the spec document is the whole change**: no skill, script or workflow
+  edit, not even the one line that looks ready.
+- **§"Public-facing text is hermetic" below applies the reference rules** to every file and commit
+  message here, not only to specs.
 
 ## A skill is written for an agent in someone else's repository
 

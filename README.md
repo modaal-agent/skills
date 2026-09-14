@@ -17,7 +17,7 @@ A skill whose name links to its directory has landed. The others are being writt
 | skill | what it teaches |
 | --- | --- |
 | [`writing-style`](skills/writing-style/SKILL.md) | writes twelve rules for prose that states facts and actions into `AGENTS.md` and `CLAUDE.md`, and reviews a draft against them, with searches for filler, buzzwords and the tells of machine-written prose |
-| spec-driven development | the minimal manual flow — write the spec, review it, implement against it, commit under its slug — and the decision-record rule: edit a spec in place while its feature is in progress, and amend it by addition once the feature is done |
+| [`spec-driven-development`](skills/spec-driven-development/SKILL.md) | writes the spec rules into `AGENTS.md` and `CLAUDE.md`, and the minimal manual flow: write the spec, review it, implement against it, commit under its slug. It covers the decision-record rule, which edits a spec in place while its feature is in progress and amends it by addition once the feature is done, and the external references a public repository can publish |
 | [`repository-init`](skills/repository-init/SKILL.md) | what a new repository carries on day one: `AGENTS.md` and `CLAUDE.md` as one file in two places, the check and CI job that hold them identical, `README.md`, `CONTRIBUTING.md`, `SECURITY.md`, the license, the ignore file and `specs/` |
 | [`git-discipline`](skills/git-discipline/SKILL.md) | writes four rules into `AGENTS.md` and `CLAUDE.md`: confirm every commit, leave the index alone, what a subject line says, and how a change reaches the default branch. It records the repository's default branch, merge strategy and branch names with the user |
 
