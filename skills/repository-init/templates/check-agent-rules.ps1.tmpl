@@ -1,0 +1,19 @@
+# AGENTS.md is the agent rules file, and each file in $Copies is a byte-identical
+# copy of it for an agent that reads that file instead. An edit to one and not
+# the others fails here. Fix a failure with: Copy-Item AGENTS.md <copy>
+$ErrorActionPreference = 'Stop'
+Set-Location (Join-Path $PSScriptRoot '..')
+
+$Copies = @('CLAUDE.md')
+
+$failed = $false
+foreach ($copy in $Copies) {
+    $same = (Test-Path -LiteralPath $copy) -and
+        ((Get-FileHash -LiteralPath 'AGENTS.md').Hash -eq (Get-FileHash -LiteralPath $copy).Hash)
+    if (-not $same) {
+        [Console]::Error.WriteLine("FAIL: $copy differs from AGENTS.md. Fix with: Copy-Item AGENTS.md $copy")
+        $failed = $true
+    }
+}
+if ($failed) { exit 1 }
+Write-Output "OK: $($Copies -join ' ') byte-identical to AGENTS.md"

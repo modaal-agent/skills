@@ -12,13 +12,13 @@ follow. Nothing in them assumes Modaal's internal tooling.
 
 ## Skills
 
-No skill directory has landed yet. These are the ones being written, in the order they are planned:
+A skill whose name links to its directory has landed. The others are being written:
 
 | skill | what it teaches |
 | --- | --- |
 | writing style | prose that states facts and actions: the sentence test, and the LLM-isms to delete — mannered metaphor, aphoristic juxtaposition, negative-space phrasing, the closing paragraph that generalizes the lesson |
 | spec-driven development | the minimal manual flow — write the spec, review it, implement against it, commit under its slug — and the decision-record rule: edit a spec in place while its feature is in progress, and amend it by addition once the feature is done |
-| repository initialization | what a new repository carries on day one: `AGENTS.md` and `CLAUDE.md` as one file in two places, the CI job that holds them identical, `CONTRIBUTING.md`, `SECURITY.md`, the license, the ignore file |
+| [`repository-init`](skills/repository-init/SKILL.md) | what a new repository carries on day one: `AGENTS.md` and `CLAUDE.md` as one file in two places, the check and CI job that hold them identical, `README.md`, `CONTRIBUTING.md`, `SECURITY.md`, the license, the ignore file and `specs/` |
 | git and branch discipline | confirm every commit, never touch the index, what a subject line says, and how a change reaches the default branch |
 
 This repository follows the rules its skills teach, so [AGENTS.md](AGENTS.md),

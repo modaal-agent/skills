@@ -1,0 +1,23 @@
+name: agent-rules
+
+on:
+  push:
+    branches: [{{DEFAULT_BRANCH}}]
+  pull_request:
+
+jobs:
+  # AGENTS.md is the agent rules file and CLAUDE.md a byte-identical copy of it.
+  # A checkout and one command, so the job reports in seconds.
+  rules:
+    name: Agent rules files are byte-identical
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      # TODO(repository-init): the current major tag, from
+      # git ls-remote --tags --refs https://github.com/actions/checkout 'v*'
+      - uses: actions/checkout@TODO(repository-init)
+
+      - name: AGENTS.md and CLAUDE.md are byte-identical
+        # Fix a failure with `cp AGENTS.md CLAUDE.md`.
+@sh         run: bash scripts/check-agent-rules.sh
+@ps         run: pwsh scripts/check-agent-rules.ps1

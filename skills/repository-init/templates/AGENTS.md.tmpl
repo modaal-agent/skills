@@ -1,0 +1,46 @@
+# Agent rules
+
+@contributing Rules for an agent working in {{PROJECT}}. They add to [CONTRIBUTING.md](CONTRIBUTING.md)
+@contributing and do not summarize it.
+@!contributing Rules for an agent working in {{PROJECT}}.
+
+@claude `AGENTS.md` and `CLAUDE.md` are one file kept in two places, byte for byte. Edit `AGENTS.md`,
+@claude then `cp AGENTS.md CLAUDE.md`. `{{CHECK_COMMAND}}` fails when the two differ.
+@claude
+**Read first, by question:**
+
+| you need | read |
+| --- | --- |
+| what this repository is and how to build and run it | [README.md](README.md) |
+@contributing | how a change is made, checked and reviewed | [CONTRIBUTING.md](CONTRIBUTING.md) |
+@security | how a vulnerability is reported, and what counts as one | [SECURITY.md](SECURITY.md) |
+@changelog | what each release changed | [CHANGELOG.md](CHANGELOG.md) |
+@specs | the plan for a change too big to carry in a commit message | `specs/` |
+| TODO(repository-init): one row per question an agent asks here, and the file that answers it | |
+
+Run from the repository root:
+
+```bash
+# TODO(repository-init): the command that builds, the command that runs the tests, and each
+# command CI runs, one per line with what it checks
+@claude {{CHECK_COMMAND}}
+```
+
+## State a rule once
+
+- TODO(repository-init): each number or list a check enforces, the file and the name it is
+  written under, and the check that holds it. Other documents name the check, not the value.
+
+## What goes in which document
+
+- **README.md**: what this repository is, how to build, install or run it, and its layout.
+@contributing - **CONTRIBUTING.md**: how a change is made, checked and reviewed, and the licensing of a
+@contributing   contribution.
+@security - **SECURITY.md**: how a vulnerability is reported, and what counts as one here.
+@changelog - **CHANGELOG.md**: what each release changes, for a consumer who pins a version.
+@claude - **AGENTS.md / CLAUDE.md**: rules only, and one file in two places. A paragraph explaining
+@claude   what something *is* goes in one of the other documents.
+@!claude - **AGENTS.md**: rules only. A paragraph explaining what something *is* goes in one of the
+@!claude   other documents.
+@specs - **specs/NNN-slug/spec.md**: the plan for a change too big to carry in a commit message: what
+@specs   is true now, what changes, the phasing and the decisions.

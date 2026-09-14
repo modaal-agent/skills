@@ -1,7 +1,7 @@
 # 001 — Four practice skills: writing style, spec-driven development, repository initialization, git discipline
 
-**Status:** Written 2026-09-11, revised in place 2026-09-14, not implemented. **Baseline:** `main`
-at `1753a20`. **Obsoletes:** nothing.
+**Status:** Written 2026-09-11, revised in place 2026-09-14. Phase 1 landed 2026-09-14; phases 2–6
+not implemented (§9.1). **Baseline:** `main` at `1753a20`. **Obsoletes:** nothing.
 
 **Relates to:**
 
@@ -323,12 +323,20 @@ writes it in the form below — not in a form of its own, and never with a liter
 agent rules file, and an adopting repository may carry `AGENTS.md`, `CLAUDE.md`, both, or neither.
 All three write the same four steps:
 
-1. List which of the two the repository has.
+1. List which of the two the repository has. With both, run `cmp AGENTS.md CLAUDE.md` before the
+   edit: a `CLAUDE.md` that matches is a copy.
 2. Make the edit in `AGENTS.md` when it exists, otherwise in the one that does.
-3. Copy it over every per-agent copy the repository carries — `cp AGENTS.md CLAUDE.md` for the
-   pair §1.4 measured — so they stay byte-identical. Which files those are is D9's list.
+3. Copy it over each file that was a copy in step 1 — `cp AGENTS.md CLAUDE.md` for the pair §1.4
+   measured — so they stay byte-identical. Leave a symlink or an `@AGENTS.md` import as it is, and
+   report a file that differed before the edit as drift.
 4. If the repository has neither, say so and name `repository-init` as the skill that creates them.
    Do not create half the set as a side effect of a rules edit.
+
+*Revised 2026-09-14, phase 1:* step 3 copied over every per-agent copy. Claude Code's memory
+documentation (E24) states that Claude Code "reads `CLAUDE.md`, not `AGENTS.md`", and recommends a
+`CLAUDE.md` that imports `@AGENTS.md`, or a symlink. A `cp` overwrites the import with a full copy,
+and on a symlink `cp` fails because source and target are one file. Step 1's `cmp` tells a copy from
+either.
 
 `repository-init` states why the files are byte-identical, writes both, and adds the CI job that
 runs `cmp AGENTS.md CLAUDE.md`. The other three state the four steps and nothing more, which is
@@ -641,19 +649,44 @@ block changes.
 *Revised 2026-09-14:* the skeleton carried the three practice sections, "copied from" each skill
 "when installed", without stating who copied them or when.
 
+**As landed in phase 1.** The skeleton `templates/AGENTS.md.tmpl` writes five parts: the opening
+lines, "Read first, by question", "Run from the repository root", "State a rule once" and "What goes
+in which document". Each part the repository has to supply is a `TODO(repository-init)` line, and
+the body's step 4 has the agent fill every one with the user until
+`grep -rn 'TODO(repository-init)' .` prints nothing. `references/agents-md-skeleton.md` gives each
+part what it holds, how to fill it, one example and what to leave out, plus two parts the template
+does not write: where the practice sections go, and how a repository writes a rule of its own. This
+resolves §12.3.
+
 ### 5.3 Files
 
-- `SKILL.md`, estimated 170–220 lines: the file set, what each file owns, the rules-equality job,
-  the order to write them in, and how to run the script in §5.5.
-- `references/agents-md-skeleton.md`, estimated 150–220 lines: the section skeleton.
-- `references/ci-and-ignore.md`, estimated 80–140 lines: the rules-equality job as YAML, and what a
-  `.gitignore` carries for a repository an agent works in — build products, OS files, local agent
-  state.
+- `SKILL.md`, estimated 170–220 lines, landed at 158: the agent rules file and the four-step edit,
+  the file set, what goes in which document, the seven steps that write the files, the template
+  grammar, and what not to assume. Phase 2 adds how to run the script in §5.5.
+- `references/agents-md-skeleton.md`, estimated 150–220 lines, landed at 125: §5.2's parts.
+- `references/ci-and-ignore.md`, estimated 80–140 lines, landed at 64: the check, the job on GitHub
+  Actions and on another CI system, and what a `.gitignore` carries — build products, OS files,
+  per-user agent state — and what stays tracked.
+- `templates/`, eleven files: `AGENTS.md`, `README.md`, `CONTRIBUTING.md`, `SECURITY.md`,
+  `CHANGELOG.md`, two license texts, `.gitignore`, the check in bash and in PowerShell, and the
+  GitHub Actions job.
 - `scripts/init-repo.sh` and `scripts/init-repo.ps1` — §5.5.
 
 Three Markdown files rather than two because §5.2's skeleton alone would push `SKILL.md` past the
 400-line budget S5 enforces. S5 reads `*.md` only, so the two scripts are outside every budget the
 gate holds today; §8.5 is what covers them instead.
+
+*Revised 2026-09-14, phase 1:* `templates/` was not planned; the skeleton was to sit inside
+`references/agents-md-skeleton.md`, and each script would have carried its own copy of every file it
+writes. With `templates/`, the two scripts and an agent writing the files by hand read one copy of
+each file. A template line that depends on a choice starts with a condition such as `@claude` or
+`@!contributing`, and a value is a token such as `{{DEFAULT_BRANCH}}`;
+`skills/repository-init/SKILL.md` §"Writing a template by hand" states the grammar. The `.tmpl` suffix keeps the files out of S5 and S6, which
+read `*.md`. The Apache-2.0 text is `https://www.apache.org/licenses/LICENSE-2.0.txt` as fetched on
+2026-09-14 (E26); the MIT text is this repository's `LICENSE` with the year and holder as tokens.
+The job template leaves `actions/checkout`'s tag as a `TODO(repository-init)` line with the command
+that lists the tags, because AGENTS.md §"A skill is written for an agent in someone else's
+repository" rules out a version literal in a skill.
 
 ### 5.5 The init script
 
@@ -887,7 +920,7 @@ owns a shared term is written before the skills that write that term.
 
 | phase | what lands | why here |
 | --- | --- | --- |
-| 1 | `skills/repository-init/` — the body and the two reference files | It owns the agent rules file, the term the other three edit. Writing it first means no later skill invents its own spelling for that file. |
+| 1 | `skills/repository-init/` — the body, the two reference files and `templates/` | It owns the agent rules file, the term the other three edit. Writing it first means no later skill invents its own spelling for that file. |
 | 2 | `skills/repository-init/scripts/` — both variants, S12 and S13 | The body written in phase 1 is the specification the two scripts are measured against. Splitting it out keeps the Markdown review and the code review in separate commits. |
 | 3 | `skills/writing-style/`, and `AGENTS.md:40-77` here replaced by its block | The first consumer of §2.4's four-step edit, and the rules the remaining two are written under. |
 | 4 | `skills/git-discipline/`, and `AGENTS.md:78-113` here replaced by its block under `## Git and pull requests` | The shortest; consumes the agent rules file and owns "the default branch". |
@@ -911,6 +944,17 @@ this repository move below each section's last line (§2.5): the CI jobs a pull 
 
 §13's rule reached this repository's `AGENTS.md`, `CLAUDE.md` and `CONTRIBUTING.md` in its own
 commit on 2026-09-14, before phase 1 (§12.12), and reaches `spec-driven-development` in phase 5.
+
+*Revised 2026-09-14, phase 1:* README rows were all to land in phase 6. S9 fails a skill directory
+`README.md` does not mention, and AGENTS.md §"State a rule once" has a new skill land with its row,
+so each of phases 1, 3, 4 and 5 turns its skill's planned row into a link to the directory. Phase 6
+keeps the README's closing edits.
+
+### 9.1 What each phase landed
+
+| phase | landed | departures from the plan, each recorded where the plan states it |
+| --- | --- | --- |
+| 1 | 2026-09-14: `SKILL.md` (158 lines), `references/agents-md-skeleton.md` (125), `references/ci-and-ignore.md` (64), `templates/` (11 files), the README row | `templates/` (§5.3); §2.4 step 3 leaves an import or a symlink (§2.4); README rows per phase (§9); §12.3 resolved (§5.2) |
 
 ---
 
@@ -1052,7 +1096,9 @@ date of each pin.
 
 **12.1 — Are the four names right, and unprefixed?** D1 chose unprefixed and the four names in
 §2.1. Both are cheap to change now and expensive after the first adopter installs. Needs an answer
-before phase 1.
+before phase 1. **Not answered.** On 2026-09-14 the user asked for phases 1–6 to be implemented,
+and they are implemented under §2.1's names. A rename after that edits the directory, `name:`, the
+README row and every mention in the other three skills, which S10 (§8.2) lists.
 
 **12.2 — Does `repository-init` write a `CHANGELOG.md`?** Asked because §1.4 measures two of four
 repositories carrying one, and both of those publish an artifact. **Resolved 2026-09-11 as proposed
@@ -1062,6 +1108,8 @@ repositories carrying one, and both of those publish an artifact. **Resolved 202
 **12.3 — How much of the `AGENTS.md` skeleton does `repository-init` supply verbatim?** A skeleton
 with fill-in instructions is small and vague; a filled example is long and gets copied unread. §5.3
 budgets 150–220 lines for the reference file either way. Needs an answer before phase 4.
+**Resolved 2026-09-14 in phase 1:** a skeleton whose unknowns are `TODO(repository-init)` lines,
+with a reference giving one example per part and no filled file (§5.2).
 
 **12.4 — Is a baseline measurement worth a phase?** §1.7 records that nothing here is measured
 against a session without the skills. The two published skills each ran such a comparison. Running
@@ -1214,8 +1262,8 @@ review.
 
 ## 14. External references
 
-Every reference this spec makes to something outside this repository. E1–E15, E21 and E23 were
-read on 2026-09-14. E16–E20 were read on 2026-09-11, and E16–E18 again on 2026-09-14 for their
+Every reference this spec makes to something outside this repository. E1–E15, E21 and E23–E26
+were read on 2026-09-14. E16–E20 were read on 2026-09-11, and E16–E18 again on 2026-09-14 for their
 HEADs. E22 has not been read. Where §1 read a repository without recording a commit, the pin is
 that repository's HEAD on 2026-09-14, and §13.1 records the values that differ.
 
@@ -1244,3 +1292,6 @@ that repository's HEAD on 2026-09-14, and §13.1 records the values that differ.
 | E21 | The cross-agent `skills` CLI, npm package `skills` | yes | https://github.com/vercel-labs/skills (from `npm view skills repository.url`); unpinned | §12.6 |
 | E22 | GitHub Actions runner images, for whether `ubuntu-latest` ships `pwsh`; not read yet | yes | https://github.com/actions/runner-images | §8.4, §12.9 |
 | E23 | GitHub Docs, "Removing sensitive data from a repository" | yes | https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/removing-sensitive-data-from-a-repository; unversioned | §13.1, D16 |
+| E24 | Claude Code documentation, "How Claude remembers your project": which instruction files load, and §"AGENTS.md" | yes | https://code.claude.com/docs/en/memory; unversioned, read 2026-09-14 | §2.4 |
+| E25 | Claude Code documentation, "Settings files and precedence": `.claude/settings.local.json` as personal, per-project settings | yes | https://code.claude.com/docs/en/settings; unversioned, read 2026-09-14 | §5.3 |
+| E26 | Apache License, Version 2.0, plain text | yes | https://www.apache.org/licenses/LICENSE-2.0.txt; SHA-256 `cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30`, fetched 2026-09-14 | §5.3 |
