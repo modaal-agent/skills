@@ -99,11 +99,11 @@ Each fact has one home, so the documents do not become copies of each other:
    documents and the rules check". The user decides whether to commit.
 7. **Name the three skills that write practice sections**, each of which, invoked, writes one
    `##` section into the agent rules file. This skill writes none of them.
-   - `writing-style` writes `## Writing style`: the rules for prose the agent produces.
-   - `git-discipline` writes `## Git and pull requests`: confirmation before a commit, the index,
-     subject lines, the default branch, the merge strategy and branch naming.
-   - `spec-driven-development` writes `## Specs`: when a spec is written, where, and when it is
-     edited in place or amended by addition.
+   - The `writing-style` skill writes `## Writing style`: the rules for prose the agent produces.
+   - The `git-discipline` skill writes `## Git and pull requests`: confirmation before a commit, the
+     index, subject lines, the default branch, the merge strategy and branch naming.
+   - The `spec-driven-development` skill writes `## Specs`: when a spec is written, where, and when
+     it is edited in place or amended by addition.
 
    Invoke each one the user asks for that is available in the session.
 

@@ -227,6 +227,9 @@ the public internet must be able to resolve every reference in it.
   Before the commit carrying it is pushed, replace the row's name and location with a redaction text
   that starts `*Redacted:*` and says what the reference is and when it was read. Redacting at merge
   is too late: the branch's commits are already public.
+- **Run `scripts/check-skills.sh` before a push that carries a spec.** S15 fails a section
+  reference with no heading to resolve to, and S16 fails an external id with no row or a private row
+  without its redaction.
 
 ## Scope
 

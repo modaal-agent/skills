@@ -93,7 +93,8 @@ write one puts it in one place.
 
 ## Sections other skills write
 
-`writing-style`, `git-discipline` and `spec-driven-development` each write one section when invoked:
+The `writing-style`, `git-discipline` and `spec-driven-development` skills each write one section when
+invoked:
 `## Writing style`, `## Git and pull requests` and `## Specs`. Each is inserted after "What goes in
 which document", or after the last of the three already present, and ends at a line naming the skill
 that wrote it. Lines a repository adds after that line, under the same heading, are its own, and the

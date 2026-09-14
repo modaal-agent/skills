@@ -1,7 +1,8 @@
 # 001 — Four practice skills: writing style, spec-driven development, repository initialization, git discipline
 
-**Status:** Written 2026-09-11, revised in place 2026-09-14. Phases 1–5 landed 2026-09-14; phase 6
-not implemented (§9.1). **Baseline:** `main` at `1753a20`. **Obsoletes:** nothing.
+**Status:** Written 2026-09-11, revised in place 2026-09-14. Phases 1–6 landed on
+`001-practice-skills` 2026-09-14 (§9.1). The feature is done when the phase 6 commit reaches `main`
+(§4.4); from then on this spec takes additions only. **Baseline:** `main` at `1753a20`. **Obsoletes:** nothing.
 
 **Relates to:**
 
@@ -920,6 +921,13 @@ guess at what is a skill name and what is an ordinary backticked word.
 
 Landed in phase 5, after all four exist, with a seeded violation in `--self-test`.
 
+**As landed in phase 6.** §9 moved S10 to phase 6. S10 reads a skill reference as a backticked name,
+or a list of backticked names joined by commas, "and" or "or", followed by the word "skill" or
+"skills", in any `.md` file under `skills/`, and fails each name that is not a directory there. Two
+passages in `repository-init` named the three practice skills without the word "skill", and were
+reworded so S10 reads them. The one other backticked hyphenated name in the skills, `ubuntu-latest`,
+is not followed by it. Seeded violation: the fixture `SKILL.md` names the `missing-skill` skill.
+
 ### 8.3 S11 — a skill that names one of the pair names both
 
 §2.4 has three skills instructing an edit to the agent rules file. The failure this spec was
@@ -935,6 +943,11 @@ one file and forgetting the other.
 
 Landed in phase 5 with S10, with its own seeded violation — delete the `CLAUDE.md` mention from the
 fixture — in `--self-test`.
+
+**As landed in phase 6.** S11 reads every file under `skills/`, templates and scripts included, and
+fails a file whose text contains `AGENTS.md` without `CLAUDE.md`, or the reverse. No file failed when
+it landed. The fixture names neither file, so the seeded violation appends a line naming
+`AGENTS.md` alone.
 
 ### 8.4 S12 — the two script variants write the same tree
 
@@ -999,6 +1012,12 @@ review holds those. Seeded violation in `--self-test`: a fixture spec citing a s
 not have.
 S14 stays reserved for §12.10.
 
+**As landed in phase 6.** `py_specs` in `scripts/check-skills.sh` runs S15 and S16 from
+`run_checks`, so they run in a tree with no skill in it. A `§"Title"` after a Markdown link resolves
+against the link's target; after a plain or backticked file name, against the repository root and
+then the spec's directory. A heading's number is dropped before its title is compared. The seeded
+violation adds a citation of a section the fixture spec lacks.
+
 ### 8.8 S16 — every external-reference id has a row, and every private row is redacted
 
 §13.2 rules 4 and 5, for the same files as S15:
@@ -1012,6 +1031,9 @@ The third bullet fails in a working copy that still names a private reference, s
 `scripts/check-skills.sh` before a push is the reminder rule 5 needs. The same failure in CI on a
 pushed branch reports a name that is already public (§13.1). Seeded violations in `--self-test`: a
 fixture spec citing `E2` with only an `E1` row, and a `no` row without `*Redacted:*`.
+
+**As landed in phase 6**, as planned, with the two seeded violations run as two fixtures. The
+private-row fixture cites the id it adds, so it fails on the redaction alone.
 
 ---
 
@@ -1036,7 +1058,8 @@ this order and is not: that reference is a name and a one-line statement of what
 Each phase records in this spec what it landed and where it departed from the plan, by editing the
 plan in place, per §4.1 step 7 and `AGENTS.md` §"Specs", the rule this spec is itself written
 under.
-Phase 6's commit closes the feature (§4.4); after it, this spec takes additions only.
+The feature is done when phase 6's commit reaches `main` (§4.4, D14); from then on, this spec takes
+additions only.
 
 Phases 3–5 make this repository's `AGENTS.md` the first install of each section (AGENTS.md §"The
 skills are the product"), and copy the file to `CLAUDE.md` in the same commit. Lines specific to
@@ -1065,6 +1088,7 @@ keeps the README's closing edits.
 | 3 | 2026-09-14: `skills/writing-style/SKILL.md` (106 lines), `references/habits.md` (162), `references/tells.md` (96), `references/ai-tells.md` (119); the 35-line block in `AGENTS.md` and `CLAUDE.md` with this repository's two lines below it; the README row; `CONTRIBUTING.md` §"Licensing" on files under another license | `references/ai-tells.md` under CC BY-SA 4.0, and thirteen tells (§3.4, §12.11); the review's fourth step (§3.3); line references into `AGENTS.md` outside §1 replaced by headings (Relates to, §2.5, §3, §4.4, §9, D5) |
 | 4 | 2026-09-14: `skills/git-discipline/SKILL.md` (108 lines); the block in `AGENTS.md` and `CLAUDE.md`, replacing two sections, with this repository's lines below it; the README row | the fourth rule's branching sentence, and the search for other git sections (§6.1); this repository's branch-naming decision left open for the user (§6.1) |
 | 5 | 2026-09-14: `skills/spec-driven-development/SKILL.md` (150 lines), `references/spec-skeleton.md` (178); the 20-line block in `AGENTS.md` and `CLAUDE.md`, replacing "Specs are a decision record", with this repository's three lines below it; the README row | invented examples, commit-pinned line references and the review checklist (§4.2); §4.4's `AGENTS.md` section renamed to "Specs" |
+| 6 | 2026-09-14: S10, S11, S15 and S16 in `scripts/check-skills.sh`, with five seeded violations; the README's closing paragraphs on how the three practice skills work and on renaming a colliding directory; `CONTRIBUTING.md` §"Adding a skill" step 6, and its check table; the S15 and S16 line in `AGENTS.md` and `CLAUDE.md`; `ci.yml`'s `skills` comment | S10's reading of a skill reference, and the two reworded `repository-init` passages (§8.2); S11 over templates and scripts (§8.3); how S15 resolves a named reference (§8.7); §12.5 resolved |
 
 ---
 
@@ -1227,7 +1251,8 @@ one here would cost a handful of model calls per skill and would give the README
 say. Proposed: spec 002, after phase 5.
 
 **12.5 — Do S10 and S11 belong in this spec's phase 5 or in the spec that adds the fifth skill?**
-Both are cheap either way, and phase 5 is where the four names first exist to check.
+Both are cheap either way, and phase 5 is where the four names first exist to check. **Resolved
+2026-09-14:** in this spec, landed in phase 6 with S15 and S16 (§9, §8.2, §8.3).
 
 **12.6 — Does the agent rules file mean more than `AGENTS.md` and `CLAUDE.md`?** Asked because the
 cross-agent `skills` CLI installs into repositories that may carry `GEMINI.md`, `.cursor/rules/` or
@@ -1370,7 +1395,8 @@ every reference in it.
   `External references` section in `references/spec-skeleton.md` (§4.2). Landed in phase 5, with the
   redaction before push in the block's last bullet.
 - **This spec:** §14 is its register, and §1.8 and §3 cite sources by register id.
-- **Checks:** S15 and S16 (§8.7, §8.8), phase 6.
+- **Checks:** S15 and S16 (§8.7, §8.8), landed in phase 6. `AGENTS.md` §"Public-facing text is
+  hermetic" names them as the checks to run before a push that carries a spec.
 
 ### 13.4 What no check here can hold
 

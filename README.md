@@ -12,7 +12,7 @@ follow. Nothing in them assumes Modaal's internal tooling.
 
 ## Skills
 
-A skill whose name links to its directory has landed. The others are being written:
+Four skills, each a directory under `skills/`:
 
 | skill | what it teaches |
 | --- | --- |
@@ -20,6 +20,14 @@ A skill whose name links to its directory has landed. The others are being writt
 | [`spec-driven-development`](skills/spec-driven-development/SKILL.md) | writes the spec rules into `AGENTS.md` and `CLAUDE.md`, and the minimal manual flow: write the spec, review it, implement against it, commit under its slug. It covers the decision-record rule, which edits a spec in place while its feature is in progress and amends it by addition once the feature is done, and the external references a public repository can publish |
 | [`repository-init`](skills/repository-init/SKILL.md) | what a new repository carries on day one: `AGENTS.md` and `CLAUDE.md` as one file in two places, the check and CI job that hold them identical, `README.md`, `CONTRIBUTING.md`, `SECURITY.md`, the license, the ignore file and `specs/` |
 | [`git-discipline`](skills/git-discipline/SKILL.md) | writes four rules into `AGENTS.md` and `CLAUDE.md`: confirm every commit, leave the index alone, what a subject line says, and how a change reaches the default branch. It records the repository's default branch, merge strategy and branch names with the user |
+
+Three of them, `writing-style`, `git-discipline` and `spec-driven-development`, write a section into
+the adopting repository's `AGENTS.md` and `CLAUDE.md` when invoked. An agent reads that file from
+its first turn, and reads a skill only once something invokes it, so the section is what holds the
+agent to the rules. `repository-init` writes the files the sections go into.
+
+The directory names carry no publisher prefix. If one collides with a skill already in
+`~/.claude/skills/`, rename the directory and the `name:` in its `SKILL.md` together.
 
 This repository follows the rules its skills teach, so [AGENTS.md](AGENTS.md),
 [CONTRIBUTING.md](CONTRIBUTING.md) and the commit history are each a worked example of one of them.

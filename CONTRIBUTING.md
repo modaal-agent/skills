@@ -54,7 +54,12 @@ specs/NNN-slug/spec.md  # the plan, the measurements and the decisions behind a 
    `references/<subject>.md` — each under 250 — once it does not.
 5. **Add the row to README.md's skill table.** Check S9 fails a skill directory the README does not
    mention.
-6. **Run the checks**, then open a pull request.
+6. **When the skill writes a section of the agent rules file, install that section here in the same
+   commit.** Copy its block into `AGENTS.md`, fill any decision lines, keep this repository's own
+   lines below the skill's last line, and run `cp AGENTS.md CLAUDE.md`. [AGENTS.md](AGENTS.md)
+   §"The skills are the product" states the rule; `writing-style`, `git-discipline` and
+   `spec-driven-development` are the three sections installed today.
+7. **Run the checks**, then open a pull request.
 
 ## Running the checks
 
@@ -68,11 +73,11 @@ No network and no build: `grep`, `awk` and `python3`, plus `pwsh` for S12 and fo
 half. Without `pwsh` on the PATH those two report skipped, except under `CI=true`, where they fail.
 The `skills` job's `ubuntu-latest` runner has `pwsh` installed.
 
-`--self-test` builds a valid fixture skill tree in a temporary directory once per check, seeds one
-violation of that check in each copy, and fails if the check that violation targets stays green. Run
-it after editing a check — a check that has never gone red is a check that has not been run.
+`--self-test` builds a valid fixture tree in a temporary directory once per seeded violation, seeds
+that violation into the copy, and fails if the check it targets stays green. Run it after editing a
+check — a check that has never gone red is a check that has not been run.
 
-What the checks hold every skill to:
+What the checks hold every skill and spec to:
 
 | check | what it fails on |
 | --- | --- |
@@ -85,8 +90,12 @@ What the checks hold every skill to:
 | S7 | a directory under `skills/` with no `SKILL.md` |
 | S8 | manifests that do not parse, or a plugin root that does not hold `skills/` |
 | S9 | a skill directory README.md does not mention |
+| S10 | a backticked name followed by "skill" or "skills", in a `.md` under `skills/`, that is not a directory under `skills/` |
+| S11 | a file under `skills/` that names `AGENTS.md` without `CLAUDE.md`, or `CLAUDE.md` without `AGENTS.md` |
 | S12 | a `scripts/init-repo.sh` without its `.ps1`, or the two writing different trees for a flag list in `S12_MATRIX`; a generated check that does not pass, or does not fail on drift; a second run that does not refuse |
 | S13 | a `.sh` or `.ps1` under `skills/`, or a `.sh.tmpl` or `.ps1.tmpl`, that does not parse |
+| S15 | in a spec, a `§N` or `§N.M` with no matching heading or numbered definition in the file; a `§"Title"` after a file name with no heading in that file beginning with the title; a "spec NNN §N" that does not resolve |
+| S16 | a spec with no `External references` section, an `E` id it cites with no row there, a public cell other than `yes` or `no`, or a `no` row that does not start `*Redacted:*` |
 
 The budgets and the key list live in `scripts/check-skills.sh` as `SKILL_BODY_MAX`,
 `REFERENCE_MAX` and `STANDARD_KEYS`. Change a number there, not in a document.
