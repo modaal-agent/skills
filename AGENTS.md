@@ -111,15 +111,14 @@ Habits to avoid (common LLM-isms):
 - Branch when the work starts. If code is ready and the checkout is `main`, ask which branch.
 - Pushing, opening a PR and merging one each need their own go-ahead.
 
-## Specs are an append-only decision ledger
+## Specs are a decision record
 
-- **A spec is amended by addition, never by revision.** While the feature is being worked on, add
-  what was measured, what a phase actually landed and what the plan became — as new lines, new
-  paragraphs or new sections. Do not rewrite or delete a line that is already there, not to fix a
-  path a later change moved, not to correct a decision since superseded, not to tidy. Revising in
-  place destroys the record of what was decided and when.
-- **An addition that supersedes an existing claim names it**, by section, and the superseded section
-  takes a line pointing forward to the addition. Both then read as one document.
+- **While the feature is being worked on, a spec may be edited in place** to keep the plan current.
+  Where later work overturns an important earlier decision, leave a short note saying what it
+  replaced and why.
+- **Once the feature is done, a spec is amended by addition.** A feature is done when the commit
+  that lands its last planned phase reaches `main`. An addition that supersedes an existing claim
+  names it by section, and the superseded section takes a line pointing forward to the addition.
 - **A closed spec may take a follow-up file beside it** instead of an appended section —
   `specs/001-<slug>/followup-<topic>.md`. The rule inside it is the same: additions only, and it
   names by section what it supersedes.

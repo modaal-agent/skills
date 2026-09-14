@@ -17,7 +17,7 @@ No skill directory has landed yet. These are the ones being written, in the orde
 | skill | what it teaches |
 | --- | --- |
 | writing style | prose that states facts and actions: the sentence test, and the LLM-isms to delete — mannered metaphor, aphoristic juxtaposition, negative-space phrasing, the closing paragraph that generalizes the lesson |
-| spec-driven development | the minimal manual flow — write the spec, review it, implement against it, commit under its slug — and the append-only ledger rule that keeps a spec readable a year later |
+| spec-driven development | the minimal manual flow — write the spec, review it, implement against it, commit under its slug — and the decision-record rule: edit a spec in place while its feature is in progress, and amend it by addition once the feature is done |
 | repository initialization | what a new repository carries on day one: `AGENTS.md` and `CLAUDE.md` as one file in two places, the CI job that holds them identical, `CONTRIBUTING.md`, `SECURITY.md`, the license, the ignore file |
 | git and branch discipline | confirm every commit, never touch the index, what a subject line says, and how a change reaches the default branch |
 
