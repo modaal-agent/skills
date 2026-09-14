@@ -77,8 +77,9 @@ No channel reads a tag or a release asset. A change is published by landing on `
 | --- | --- |
 | `skills/<name>/SKILL.md` | the resident body an agent reads on invocation |
 | `skills/<name>/references/*.md` | opened per task, not resident |
+| `skills/<name>/scripts/`, `templates/` | a program the body runs, in bash and PowerShell, and the files it writes |
 | `.claude-plugin/` | `marketplace.json` and `plugin.json` — the Claude Code channel |
-| `scripts/check-skills.sh` | the nine checks, and `--self-test` for the checks themselves |
+| `scripts/check-skills.sh` | the skill checks, and `--self-test` for the checks themselves |
 | `.github/workflows/ci.yml` | the `rules` job (`AGENTS.md` == `CLAUDE.md`) and the `skills` job |
 | `specs/NNN-slug/spec.md` | the plan, the measurements and the decisions behind a change |
 

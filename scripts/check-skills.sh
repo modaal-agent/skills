@@ -3,13 +3,16 @@
 # manifests that publish them.
 #
 # What they hold a skill to: frontmatter every install channel can parse, a body
-# inside the documented budgets, links that resolve, and a README index that
-# lists every skill directory. They check structure, not intent — a skill that
-# tells an agent to do the wrong thing passes all nine, and the pull-request
-# review is where that is caught (SECURITY.md).
+# inside the documented budgets, links that resolve, a README index that lists
+# every skill directory, and scripts that parse, with the bash and PowerShell
+# variants of a program writing the same files. They check structure, not intent
+# — a skill that tells an agent to do the wrong thing passes all of them, and the
+# pull-request review is where that is caught (SECURITY.md).
 #
-# Markdown and JSON only, through grep, awk and python3 — no toolchain, no
-# network — so the `skills` job reports in seconds beside `rules`.
+# No network and no build: grep, awk and python3, plus pwsh for the PowerShell
+# half of S12 and S13. Without pwsh on the PATH those two report skipped, except
+# under CI=true, where they fail. The `skills` job reports in seconds beside
+# `rules`.
 #
 # Usage:
 #   scripts/check-skills.sh               # check this checkout
@@ -127,6 +130,77 @@ if not plugin_root.is_dir():
 elif (root / 'skills').is_dir() and not (plugin_root / 'skills').is_dir():
     print(f"source {source!r} resolves to {plugin_root}, which holds no skills/ directory")
 PY
+}
+
+have_pwsh() { command -v pwsh >/dev/null 2>&1; }
+# stdin is /dev/null so a script run inside a `while read` loop cannot read the loop's input.
+run_pwsh() { pwsh -NoProfile -NonInteractive -File "$@" </dev/null; }
+
+# The flag lists S12 runs both init-repo variants with, one run per line. Each
+# line changes the file set: the copy, the check's language, the optional files,
+# both license texts, and the CI job. Every line names --script, because each
+# variant defaults to its own language.
+S12_MATRIX='--agent claude --script sh --default-branch main --holder Fixture
+--agent claude --script ps --default-branch main --holder Fixture
+--agent agents --script sh --default-branch main --holder Fixture
+--no-contributing --no-security --license apache-2.0 --script sh --default-branch trunk
+--changelog --no-specs --ci none --license none --script ps --default-branch main'
+
+# s12_pair <init-repo.sh> <init-repo.ps1> <empty work dir>: prints one line per
+# difference between the two variants, and nothing when they agree.
+s12_pair() {
+  local sh="$1" ps="$2" work="$3" n=0 flags tree
+  while IFS= read -r flags; do
+    [ -n "$flags" ] || continue
+    n=$((n + 1))
+    mkdir -p "$work/$n/sh" "$work/$n/ps"
+    # $flags is split into words on purpose: each matrix line is a flag list.
+    # shellcheck disable=SC2086
+    if ! bash "$sh" --path "$work/$n/sh/project" --non-interactive $flags >"$work/$n/sh.out" 2>&1 </dev/null; then
+      echo "init-repo.sh $flags exited non-zero: $(tail -n 1 "$work/$n/sh.out")"
+      continue
+    fi
+    # shellcheck disable=SC2086
+    if ! run_pwsh "$ps" --path "$work/$n/ps/project" --non-interactive $flags >"$work/$n/ps.out" 2>&1; then
+      echo "init-repo.ps1 $flags exited non-zero: $(tail -n 1 "$work/$n/ps.out")"
+      continue
+    fi
+    if ! diff -r "$work/$n/sh/project" "$work/$n/ps/project" >"$work/$n/diff" 2>&1; then
+      echo "the two variants wrote different trees for: $flags"
+      head -n 20 "$work/$n/diff"
+    fi
+  done <<< "$S12_MATRIX"
+
+  # Runs 1 and 2 each wrote a check. It passes on the tree it came with and fails
+  # once CLAUDE.md drifts, and a second run into that tree refuses and writes nothing.
+  tree="$work/1/sh/project"
+  if [ -f "$tree/scripts/check-agent-rules.sh" ]; then
+    if ! bash "$tree/scripts/check-agent-rules.sh" >/dev/null 2>&1; then
+      echo "the check-agent-rules.sh init-repo.sh wrote fails on the tree it wrote"
+    fi
+    echo "drift" >> "$tree/CLAUDE.md"
+    if bash "$tree/scripts/check-agent-rules.sh" >/dev/null 2>&1; then
+      echo "the check-agent-rules.sh init-repo.sh wrote passes a CLAUDE.md that differs from AGENTS.md"
+    fi
+    if bash "$sh" --path "$tree" --non-interactive --default-branch main --holder Fixture >/dev/null 2>&1 \
+      || [ "$(tail -n 1 "$tree/CLAUDE.md")" != "drift" ]; then
+      echo "init-repo.sh, run into a tree it already wrote, did not refuse"
+    fi
+  fi
+  tree="$work/2/ps/project"
+  if [ -f "$tree/scripts/check-agent-rules.ps1" ]; then
+    if ! run_pwsh "$tree/scripts/check-agent-rules.ps1" >/dev/null 2>&1; then
+      echo "the check-agent-rules.ps1 init-repo.ps1 wrote fails on the tree it wrote"
+    fi
+    echo "drift" >> "$tree/CLAUDE.md"
+    if run_pwsh "$tree/scripts/check-agent-rules.ps1" >/dev/null 2>&1; then
+      echo "the check-agent-rules.ps1 init-repo.ps1 wrote passes a CLAUDE.md that differs from AGENTS.md"
+    fi
+    if run_pwsh "$ps" --path "$tree" --non-interactive --default-branch main --holder Fixture >/dev/null 2>&1 \
+      || [ "$(tail -n 1 "$tree/CLAUDE.md")" != "drift" ]; then
+      echo "init-repo.ps1, run into a tree it already wrote, did not refuse"
+    fi
+  fi
 }
 
 FAILED=0
@@ -292,6 +366,90 @@ $s6"
   else
     ok S9 "README.md lists every skill directory"
   fi
+
+  # ── S12: a program's bash and PowerShell variants write the same tree ──
+  # A program shipped in bash and in PowerShell is two programs, and one falls
+  # behind the other unless something runs both. S12 runs every
+  # scripts/init-repo.sh and the init-repo.ps1 beside it with the same flags into
+  # empty directories, and compares the trees byte for byte.
+  local s12="" s12_pairs="" script counterpart s12_work s12_out
+  while IFS= read -r script; do
+    [ -n "$script" ] || continue
+    case "$script" in
+      *.sh) counterpart="${script%.sh}.ps1" ;;
+      *) counterpart="${script%.ps1}.sh" ;;
+    esac
+    if [ ! -f "$counterpart" ]; then
+      s12="$s12
+${script#"$ROOT"/} has no $(basename "$counterpart") beside it"
+    elif [ "${script##*.}" = sh ]; then
+      s12_pairs="$s12_pairs
+$script"
+    fi
+  done <<< "$(find "$SKILLS_DIR" -path '*/scripts/*' -type f \( -name init-repo.sh -o -name init-repo.ps1 \) | sort)"
+  if [ -n "$s12_pairs" ] && have_pwsh; then
+    while IFS= read -r script; do
+      [ -n "$script" ] || continue
+      s12_work="$(mktemp -d)"
+      s12_out="$(s12_pair "$script" "${script%.sh}.ps1" "$s12_work")"
+      rm -rf "$s12_work"
+      [ -z "$s12_out" ] || s12="$s12
+${script#"$ROOT"/}:
+$s12_out"
+    done <<< "$s12_pairs"
+  fi
+  if [ -n "$s12" ]; then
+    fail S12 "the bash and PowerShell variants disagree:$s12"
+  elif [ -z "$s12_pairs" ]; then
+    ok S12 "no skill ships a scripts/init-repo.sh and init-repo.ps1 pair"
+  elif ! have_pwsh && [ "${CI:-}" = true ]; then
+    fail S12 "pwsh is not on the PATH, so init-repo.ps1 was not run"
+  elif ! have_pwsh; then
+    ok S12 "skipped: pwsh is not on the PATH here, and CI runs it"
+  else
+    ok S12 "each init-repo pair writes the same tree for every flag list in the matrix"
+  fi
+
+  # ── S13: every shipped script parses ───────────────────────────
+  # bash -n, and PowerShell's parser, over every script and script template under
+  # skills/. It costs milliseconds and reports an edit never run on the other
+  # host, including where S12 is skipped.
+  local s13="" s13_note="" errors ps_files parse_dir file
+  local -a ps_list
+  while IFS= read -r script; do
+    [ -n "$script" ] || continue
+    if ! errors="$(bash -n "$script" 2>&1)"; then
+      s13="$s13
+${errors//"$ROOT"\//}"
+    fi
+  done <<< "$(find "$SKILLS_DIR" -type f \( -name '*.sh' -o -name '*.sh.tmpl' \) | sort)"
+  ps_files="$(find "$SKILLS_DIR" -type f \( -name '*.ps1' -o -name '*.ps1.tmpl' \) | sort)"
+  if [ -n "$ps_files" ] && have_pwsh; then
+    ps_list=()
+    while IFS= read -r file; do ps_list+=("$file"); done <<< "$ps_files"
+    parse_dir="$(mktemp -d)"
+    cat > "$parse_dir/parse.ps1" <<'PS'
+foreach ($file in $args) {
+    $errors = $null
+    [void][System.Management.Automation.Language.Parser]::ParseFile($file, [ref]$null, [ref]$errors)
+    foreach ($e in $errors) { Write-Output "$($file):$($e.Extent.StartLineNumber): $($e.Message)" }
+}
+PS
+    errors="$(run_pwsh "$parse_dir/parse.ps1" "${ps_list[@]}" 2>&1 || true)"
+    rm -rf "$parse_dir"
+    [ -z "$errors" ] || s13="$s13
+${errors//"$ROOT"\//}"
+  elif [ -n "$ps_files" ] && [ "${CI:-}" = true ]; then
+    s13="$s13
+pwsh is not on the PATH, so no .ps1 file was parsed"
+  elif [ -n "$ps_files" ]; then
+    s13_note="; .ps1 files skipped, pwsh is not on the PATH"
+  fi
+  if [ -n "$s13" ]; then
+    fail S13 "a script under skills/ does not parse, or was not parsed:$s13"
+  else
+    ok S13 "every script under skills/ parses$s13_note"
+  fi
 }
 
 # ── the self-test ────────────────────────────────────────────────
@@ -357,7 +515,11 @@ self_test() {
   # cannot be a local.
   trap 'rm -rf "$WORK"' EXIT
 
-  for check in S1 S2 S3 S4 S5 S6 S7 S8 S9; do
+  for check in S1 S2 S3 S4 S5 S6 S7 S8 S9 S12 S13; do
+    if [ "$check" = S12 ] && ! have_pwsh && [ "${CI:-}" != true ]; then
+      printf -- '– S12 not self-tested: pwsh is not on the PATH\n'
+      continue
+    fi
     root="$WORK/$check"
     mkdir -p "$root"
     seed_fixture "$root"
@@ -372,6 +534,28 @@ self_test() {
       S7) mkdir -p "$root/skills/no-body" ;;
       S8) perl -0pi -e 's/"name": "fixture"/"name": "fixture-plugin"/' "$root/.claude-plugin/plugin.json" ;;
       S9) echo "An index that mentions no skill directory." > "$root/README.md" ;;
+      S12)
+        mkdir -p "$root/skills/fixture-skill/scripts"
+        cat > "$root/skills/fixture-skill/scripts/init-repo.sh" <<'FIXTURE'
+#!/usr/bin/env bash
+# Writes one file naming this variant, so the two variants' trees differ.
+while [ $# -gt 0 ]; do
+  if [ "$1" = --path ]; then target="$2"; fi
+  shift
+done
+mkdir -p "$target" && echo sh > "$target/variant.txt"
+FIXTURE
+        cat > "$root/skills/fixture-skill/scripts/init-repo.ps1" <<'FIXTURE'
+# Writes one file naming this variant, so the two variants' trees differ.
+$target = $args[[array]::IndexOf($args, '--path') + 1]
+New-Item -ItemType Directory -Force -Path $target | Out-Null
+Set-Content -Path (Join-Path $target 'variant.txt') -Value 'ps'
+FIXTURE
+        ;;
+      S13)
+        mkdir -p "$root/skills/fixture-skill/scripts"
+        printf '#!/usr/bin/env bash\nif then\n' > "$root/skills/fixture-skill/scripts/broken.sh"
+        ;;
     esac
     expect_red "$check" "$root" || red=1
   done

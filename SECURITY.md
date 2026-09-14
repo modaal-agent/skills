@@ -21,7 +21,10 @@ adopter's repository. Report any of these:
   reviewing the pull request.
 - A private repository name, internal path or internal planning reference that reached a published
   file.
+- A script under `skills/` that writes outside the directory it is given, overwrites an existing
+  file without the flag that allows it, or runs a `git` command that stages, commits or pushes.
 
-`scripts/check-skills.sh` checks structure — frontmatter, budgets, links, manifests. It does not
-read a skill for intent, so the review of the pull request is where that is caught, and a report
-here is where it is caught afterwards.
+`scripts/check-skills.sh` checks structure — frontmatter, budgets, links, manifests — and that the
+scripts under `skills/` parse, with the bash and PowerShell variants of `repository-init`'s script
+writing the same files. It does not read a skill or a script for intent, so the review of the pull
+request is where that is caught, and a report here is where it is caught afterwards.

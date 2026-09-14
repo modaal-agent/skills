@@ -2,6 +2,7 @@
 name: repository-init
 description: Set a repository up so a coding agent working in it has rules to follow from its first turn. Writes AGENTS.md and its byte-identical copy CLAUDE.md, the check and CI job that hold the two identical, README.md, CONTRIBUTING.md, SECURITY.md, a license file, .gitignore and specs/. Use when creating a new repository, when a repository has no AGENTS.md or CLAUDE.md, when asked to add agent rules, contributor documentation, a security policy or a license, when AGENTS.md and CLAUDE.md have drifted apart, or when a CI job reports that CLAUDE.md differs from AGENTS.md.
 license: MIT
+allowed-tools: Bash(${CLAUDE_SKILL_DIR}/scripts/init-repo.sh *) Bash(pwsh ${CLAUDE_SKILL_DIR}/scripts/init-repo.ps1 *)
 ---
 
 # Repository initialization
@@ -87,7 +88,8 @@ Each fact has one home, so the documents do not become copies of each other:
    - whether Claude Code is used here, which decides `CLAUDE.md`, the check and the CI job;
    - the check's language: bash, or PowerShell when contributors work on Windows without bash;
    - whether the repository uses specs, publishes a versioned artifact, and runs GitHub Actions.
-3. **Write each missing file from `templates/`**, as the next section describes.
+3. **Write each missing file** with the script, as the next section describes, or from
+   `templates/` by hand, as §"Writing a template by hand" describes.
 4. **Fill every `TODO(repository-init)` line with the user.** Read the answer from the repository
    where it shows: build files, existing CI configuration, the remote's URL. Ask for the rest.
    `grep -rn 'TODO(repository-init)' .` prints nothing when this step is done.
@@ -104,6 +106,48 @@ Each fact has one home, so the documents do not become copies of each other:
      edited in place or amended by addition.
 
    Invoke each one the user asks for that is available in the session.
+
+## Run the script
+
+`scripts/init-repo.sh` and `scripts/init-repo.ps1` write the file set from `templates/` in one run.
+The two write the same bytes for the same flags; run `init-repo.sh` where bash is available, and
+`init-repo.ps1` on a Windows host without it. In Claude Code the scripts are at
+`${CLAUDE_SKILL_DIR}/scripts/`. Under any other agent they are in the `scripts/` directory beside
+this `SKILL.md`.
+
+Run it with `--dry-run` first, show the user the list, then run it without:
+
+```bash
+${CLAUDE_SKILL_DIR}/scripts/init-repo.sh --path . --agent claude --license mit --dry-run
+```
+
+```powershell
+pwsh ${CLAUDE_SKILL_DIR}/scripts/init-repo.ps1 --path . --agent claude --license mit --dry-run
+```
+
+| flag | values | default |
+| --- | --- | --- |
+| `--path <dir>` | the repository root | `.` |
+| `--agent` | `claude` for `AGENTS.md` and `CLAUDE.md`, `agents` for `AGENTS.md` alone | `claude` |
+| `--script` | `sh` or `ps`: the language of `scripts/check-agent-rules` | the variant's own |
+| `--license` | `mit`, `apache-2.0` or `none` | `mit` |
+| `--holder <name>` | the MIT copyright holder | `git config user.name` |
+| `--contributing`, `--security`, `--specs` | each with a `--no-` form | on |
+| `--changelog` | with a `--no-` form | off |
+| `--ci` | `github` or `none` | `github` |
+| `--default-branch <name>` | the default branch | read from git, otherwise asked |
+| `--skip-existing` | write only the files that do not exist | off |
+| `--force` | overwrite the files that exist | off |
+| `--dry-run` | print the files it would write, and write nothing | off |
+| `--non-interactive` | never prompt; exit 2 naming the missing value | off |
+
+- **When a file of the set exists**, the script lists every one, writes nothing and exits 1. Rerun
+  with `--skip-existing` to write the missing files. Use `--force` only after the user has confirmed
+  that each listed file may be overwritten.
+- **It writes files and nothing else.** It does not run `git init`, stage, commit or push, and it
+  prints a commit subject for the user to use.
+- **Step 4 still applies** to what it writes: every `TODO(repository-init)` line is the user's to
+  answer.
 
 ## Writing a template by hand
 

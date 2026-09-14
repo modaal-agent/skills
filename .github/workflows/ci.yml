@@ -24,8 +24,11 @@ jobs:
   # ── Skills lane ──────────────────────────────────────────────────
   # Every skill under skills/, and the two .claude-plugin/ manifests that
   # publish them: frontmatter each install channel can parse, bodies inside the
-  # documented budgets, links that resolve, and a README index that lists every
-  # skill directory. Markdown and JSON through grep, awk and python3.
+  # documented budgets, links that resolve, a README index that lists every
+  # skill directory, and scripts that parse, with repository-init's bash and
+  # PowerShell variants run and compared. grep, awk, python3, and the pwsh that
+  # ubuntu-latest has installed; GitHub sets CI=true, so a runner without pwsh
+  # fails S12 and S13 instead of skipping them.
   skills:
     name: Agent skills (skills/ and .claude-plugin/)
     runs-on: ubuntu-latest
@@ -45,5 +48,5 @@ jobs:
             echo "### modaal-agent/skills — checks"
             echo ""
             echo "- \`rules\`: AGENTS.md and CLAUDE.md byte-identical"
-            echo "- \`skills\`: frontmatter, budgets, links, manifests, README index"
+            echo "- \`skills\`: frontmatter, budgets, links, manifests, README index, scripts"
           } >> "$GITHUB_STEP_SUMMARY"

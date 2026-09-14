@@ -20,13 +20,13 @@ and fails if they differ.
 Run from the repository root:
 
 ```bash
-scripts/check-skills.sh              # the nine checks the `skills` job runs
+scripts/check-skills.sh              # the checks the `skills` job runs
 scripts/check-skills.sh --self-test  # each check against a seeded violation
 cmp AGENTS.md CLAUDE.md              # what the `rules` job runs
 ```
 
-Neither needs a toolchain — Markdown and JSON through `grep`, `awk` and `python3` — so both report in
-seconds.
+Neither needs a build: `grep`, `awk`, `python3`, and `pwsh` for S12 and S13, so both report in
+seconds. Without `pwsh` on the PATH, S12 and S13's PowerShell half report skipped; CI runs them.
 
 ## The skills are the product, and this repository is their first consumer
 

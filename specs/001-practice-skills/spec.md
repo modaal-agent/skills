@@ -1,7 +1,7 @@
 # 001 — Four practice skills: writing style, spec-driven development, repository initialization, git discipline
 
-**Status:** Written 2026-09-11, revised in place 2026-09-14. Phase 1 landed 2026-09-14; phases 2–6
-not implemented (§9.1). **Baseline:** `main` at `1753a20`. **Obsoletes:** nothing.
+**Status:** Written 2026-09-11, revised in place 2026-09-14. Phases 1–2 landed 2026-09-14; phases
+3–6 not implemented (§9.1). **Baseline:** `main` at `1753a20`. **Obsoletes:** nothing.
 
 **Relates to:**
 
@@ -699,10 +699,11 @@ it is the first executable thing this repository ships: until now `skills/` has 
 writes the call as:
 
 ```bash
-${CLAUDE_SKILL_DIR}/scripts/init-repo.sh --here --agent claude
+${CLAUDE_SKILL_DIR}/scripts/init-repo.sh --path . --agent claude
 ```
 
-and the frontmatter pre-approves it with `allowed-tools: Bash(${CLAUDE_SKILL_DIR}/scripts/* *)`.
+and the frontmatter pre-approves it and the PowerShell call with
+`allowed-tools: Bash(${CLAUDE_SKILL_DIR}/scripts/init-repo.sh *) Bash(pwsh ${CLAUDE_SKILL_DIR}/scripts/init-repo.ps1 *)`.
 `allowed-tools` is one of the six standard keys S3 permits, so this costs nothing at the other
 channels. `shell: powershell` is **not** one of the six: a skill cannot select its own shell and
 stay uploadable, which is why the choice between the two variants is the agent's, made from the host
@@ -724,29 +725,41 @@ variant, and `--here`, `--force` and `--non-interactive`:
 | flag | values | default | what it decides |
 | --- | --- | --- | --- |
 | `--path <dir>` | a path | `.` | where to write |
-| `--agent <name>` | repeatable | `claude` | which per-agent copies of the rules file to write (§12.6, D9) |
-| `--script sh\|ps` | | the host's | which variant of the *generated* check the target repository gets |
-| `--license <id>` | `mit`, `apache-2.0`, `none` | `mit` | which license text, and the `license:` the skill frontmatter carries |
+| `--agent <name>` | `agents`, `claude`; repeatable | `claude` | which per-agent copies of the rules file to write (§12.6, D9) |
+| `--script sh\|ps` | | the variant's own: `sh` for `init-repo.sh`, `ps` for `init-repo.ps1` | which variant of the *generated* check the target repository gets |
+| `--license <id>` | `mit`, `apache-2.0`, `none` | `mit` | which license text |
+| `--holder <name>` | | `git config user.name`, else ask | the MIT copyright holder |
 | `--contributing` / `--no-contributing` | | on | |
 | `--security` / `--no-security` | | on | |
 | `--changelog` / `--no-changelog` | | **off** | D8 |
-| `--specs` / `--no-specs` | | on | `specs/`, and the spec rules section in the rules file |
+| `--specs` / `--no-specs` | | on | `specs/.gitkeep` |
 | `--ci github\|none` | | `github` | who gets the rules-equality job |
-| `--default-branch <name>` | | read from the repository, else ask | recorded in the rules file, never assumed (§2.4) |
+| `--default-branch <name>` | | read from the repository, else ask | the branch `CONTRIBUTING.md` names and the CI job triggers on, never assumed (§2.4) |
+| `--skip-existing` | | off | write only the files that do not exist |
 | `--dry-run` | | off | print the file list, write nothing |
 | `--force` | | off | overwrite existing files |
 | `--non-interactive` | | off | never prompt — fail with what is missing instead |
 
-**What it writes.** `AGENTS.md`, plus one byte-identical copy per `--agent`; `README.md`,
-`CONTRIBUTING.md`, `SECURITY.md`, the license file, `.gitignore`, `specs/`; the rules-equality check
-as `scripts/check-agent-rules.sh` or `.ps1` per `--script`, and the CI job that calls it.
+**What it writes.** `AGENTS.md`, plus `CLAUDE.md` copied from it under `--agent claude`; `README.md`,
+`CONTRIBUTING.md`, `SECURITY.md`, `CHANGELOG.md`, the license file, `.gitignore`, `specs/.gitkeep`;
+and, when `CLAUDE.md` is written, the rules-equality check as `scripts/check-agent-rules.sh` or
+`.ps1` per `--script`, and `.github/workflows/agent-rules.yml`, the CI job that calls it. With
+`--agent agents` alone there is no copy to compare, and it writes neither.
+
+*Revised 2026-09-14, phase 2:* the call used `--here`, which the table never listed; it is
+`--path .`. `--license` no longer sets a skill's `license:`, because the target is any repository and
+carries no skill. `--specs` writes no spec rules section, per §5.2. `--holder` is added because the
+MIT text names a holder, and `--skip-existing` because "What it refuses" below leaves the common case,
+a repository that already has a `README.md`, with `--force` as its only way forward. Exit status: 0
+when written, 1 on a collision with nothing written, 2 on a usage error or a value missing under
+`--non-interactive`.
 
 That check is a generated script rather than the inline `cmp AGENTS.md CLAUDE.md` §5.1 describes,
 for two reasons: with more than one per-agent copy the job is a loop, and `cmp` is not on a
 PowerShell host. §5.1's one-line job is the `--agent claude --script sh` case of it.
 
-**What it refuses.** Any existing file, unless `--force`: it lists every collision and exits
-non-zero having written nothing. The common case is not a greenfield directory — it is a repository
+**What it refuses.** Any existing file, unless `--skip-existing` or `--force`: it lists every
+collision and exits 1 having written nothing. The common case is not a greenfield directory — it is a repository
 that already has a `README.md` and wants the rest.
 
 **What it does not do.** `git init`, `git add`, `git commit`, `git push`, or create a branch. It
@@ -863,11 +876,29 @@ This is the first check that executes what it is checking, so it needs `bash` an
 runner. Whether GitHub's `ubuntu-latest` image ships `pwsh` is §12.9; if it does not, S12 runs on a
 second runner and the `skills` job keeps its "no toolchain" property.
 
+**As landed in phase 2.** S12 runs every `skills/*/scripts/init-repo.sh` and the `init-repo.ps1`
+beside it; either one alone fails. `S12_MATRIX` in `scripts/check-skills.sh` holds five flag lists:
+`--agent claude --script sh`, `--agent claude --script ps`, `--agent agents`,
+`--no-contributing --no-security --license apache-2.0`, and
+`--changelog --no-specs --ci none --license none`. Every list also names `--script`, since each
+variant defaults to its own language, and `--default-branch`. Between them they write every
+template and both license texts. After the diff, S12 runs the check each of the first two lists generated, which has
+to pass on its own tree and fail once `CLAUDE.md` gains a line, and reruns each variant into its
+tree, which has to exit non-zero and leave the tree as it was. Without `pwsh` on the PATH, S12
+reports skipped; under `CI=true`, which GitHub Actions sets, it fails instead. §12.9 put `pwsh` on
+`ubuntu-latest`, so S12 runs in the `skills` job. The seeded violation in `--self-test` is a pair of
+fixture scripts that each write a file naming their own variant.
+
 ### 8.5 S13 — both scripts parse
 
 `bash -n` on the `.sh` and a parse-only load of the `.ps1`, on every push. It costs milliseconds and
 catches the edit that was never run on the other host. S12 subsumes it when both interpreters are
 present; S13 is what still reports when only one is.
+
+**As landed in phase 2.** S13 parses every `*.sh` and `*.sh.tmpl` under `skills/` with `bash -n`,
+and every `*.ps1` and `*.ps1.tmpl` with PowerShell's `Parser.ParseFile` in one `pwsh` run, so the
+check scripts in `templates/` are held too. Without `pwsh` the PowerShell half is skipped locally
+and fails under `CI=true`, as in S12. The seeded violation is a fixture `.sh` holding `if then`.
 
 ### 8.6 What no check can hold
 
@@ -955,6 +986,7 @@ keeps the README's closing edits.
 | phase | landed | departures from the plan, each recorded where the plan states it |
 | --- | --- | --- |
 | 1 | 2026-09-14: `SKILL.md` (158 lines), `references/agents-md-skeleton.md` (125), `references/ci-and-ignore.md` (64), `templates/` (11 files), the README row | `templates/` (§5.3); §2.4 step 3 leaves an import or a symlink (§2.4); README rows per phase (§9); §12.3 resolved (§5.2) |
+| 2 | 2026-09-14: `scripts/init-repo.sh` and `init-repo.ps1`, `skills/repository-init/SKILL.md` §"Run the script" and `allowed-tools`, S12 and S13 with their self-test cases, and the SECURITY, CONTRIBUTING, README, `AGENTS.md` and `ci.yml` edits. Before the commit, S12 and `--self-test` ran against PowerShell 7.4.20 on arm64; CI's runner has 7.6.5 (§12.9) | `--holder`, `--skip-existing`, `--path .` for `--here`, and no check or job under `--agent agents` (§5.5); S12's matrix and its check, rerun and skip rules (§8.4); S13 parses the templates (§8.5); §12.7 and §12.9 resolved |
 
 ---
 
@@ -1133,7 +1165,11 @@ defect in a shipped script, CONTRIBUTING.md's "no toolchain, Markdown and JSON o
 `check-skills.sh` and would need to stop describing the whole gate, and README's layout table gains
 a row. The alternative is a second repository holding the script, which costs the adopter a second
 install and breaks `${CLAUDE_SKILL_DIR}`. Proposed: keep it here and make the three document edits
-part of phase 2. Needs an answer before phase 2.
+part of phase 2. Needs an answer before phase 2. **Resolved 2026-09-14 in phase 2 as proposed:**
+SECURITY.md lists a script that writes outside its directory, overwrites without the flag that
+allows it, or stages, commits or pushes; CONTRIBUTING.md's layout, its "Running the checks" and its
+check table name `pwsh`, S12 and S13; README's layout table gains the `scripts/` and `templates/` row.
+`AGENTS.md`'s command block and `ci.yml`'s `skills` comment changed with them.
 
 **12.8 — Is a `py` variant worth it?** `specify init` offers `sh|ps|py`. D11 ships two. A third
 would cover a host with neither bash nor PowerShell, at the cost of a third implementation S12 has
@@ -1141,7 +1177,9 @@ to hold identical and a Python runtime the adopter may not have. Proposed: no, u
 
 **12.9 — Does GitHub's `ubuntu-latest` image ship `pwsh`?** S12 (§8.4) runs both variants in one
 job if it does, and needs a second runner if it does not. Unmeasured — read it from the runner image
-manifest before phase 2, not from memory.
+manifest before phase 2, not from memory. **Resolved 2026-09-14 from E22:** the repository's README
+maps `ubuntu-latest` to Ubuntu 24.04, and that image's software list, image version
+`20260907.300.1`, lists PowerShell 7.6.5. S12 and S13 run in the `skills` job.
 
 **12.10 — Does a check here hold each practice skill's block?** Candidate S14: each of the three
 `SKILL.md` files carries exactly one fenced block whose first line is its §2.5 heading and whose
@@ -1264,7 +1302,7 @@ review.
 
 Every reference this spec makes to something outside this repository. E1–E15, E21 and E23–E26
 were read on 2026-09-14. E16–E20 were read on 2026-09-11, and E16–E18 again on 2026-09-14 for their
-HEADs. E22 has not been read. Where §1 read a repository without recording a commit, the pin is
+HEADs. E22 was read on 2026-09-14. Where §1 read a repository without recording a commit, the pin is
 that repository's HEAD on 2026-09-14, and §13.1 records the values that differ.
 
 | id | reference | public | URL and pin | cited in |
@@ -1290,7 +1328,7 @@ that repository's HEAD on 2026-09-14, and §13.1 records the values that differ.
 | E19 | github/spec-kit, the `specify init` command and its flags | yes | https://github.com/github/spec-kit; unpinned | §0, §5.5, D11, §12.8 |
 | E20 | Claude Code skills documentation: `${CLAUDE_SKILL_DIR}`, `allowed-tools`, `shell` | yes | https://code.claude.com/docs/en/skills; unversioned | §1.7, §5.5, D10 |
 | E21 | The cross-agent `skills` CLI, npm package `skills` | yes | https://github.com/vercel-labs/skills (from `npm view skills repository.url`); unpinned | §12.6 |
-| E22 | GitHub Actions runner images, for whether `ubuntu-latest` ships `pwsh`; not read yet | yes | https://github.com/actions/runner-images | §8.4, §12.9 |
+| E22 | GitHub Actions runner images: the README's label table, and the Ubuntu 24.04 software list | yes | https://github.com/actions/runner-images/blob/main/README.md; https://github.com/actions/runner-images/blob/main/images/ubuntu/Ubuntu2404-Readme.md, image version `20260907.300.1`; read 2026-09-14 | §8.4, §12.9 |
 | E23 | GitHub Docs, "Removing sensitive data from a repository" | yes | https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/removing-sensitive-data-from-a-repository; unversioned | §13.1, D16 |
 | E24 | Claude Code documentation, "How Claude remembers your project": which instruction files load, and §"AGENTS.md" | yes | https://code.claude.com/docs/en/memory; unversioned, read 2026-09-14 | §2.4 |
 | E25 | Claude Code documentation, "Settings files and precedence": `.claude/settings.local.json` as personal, per-project settings | yes | https://code.claude.com/docs/en/settings; unversioned, read 2026-09-14 | §5.3 |

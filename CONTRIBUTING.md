@@ -26,10 +26,12 @@ is pushed. [AGENTS.md](AGENTS.md) §"Public-facing text is hermetic" states the 
 skills/<name>/
   SKILL.md              # the resident body — under 400 lines
   references/*.md       # loaded when the agent opens one — each under 250 lines
+  scripts/              # a program the body runs, in bash and in PowerShell — S12, S13
+  templates/            # files a script writes, read by the script and by an agent writing by hand
 .claude-plugin/
   marketplace.json      # the repository root is the marketplace
   plugin.json           # one plugin, carrying every skill under skills/
-scripts/check-skills.sh # the nine checks, and --self-test for the checks themselves
+scripts/check-skills.sh # the skill checks, and --self-test for the checks themselves
 .github/workflows/ci.yml
   rules                 # AGENTS.md and CLAUDE.md are byte-identical
   skills                # scripts/check-skills.sh
@@ -62,13 +64,15 @@ scripts/check-skills.sh --self-test  # each check against a seeded violation
 cmp AGENTS.md CLAUDE.md              # what the `rules` job runs
 ```
 
-No toolchain and no network: Markdown and JSON through `grep`, `awk` and `python3`.
+No network and no build: `grep`, `awk` and `python3`, plus `pwsh` for S12 and for S13's PowerShell
+half. Without `pwsh` on the PATH those two report skipped, except under `CI=true`, where they fail.
+The `skills` job's `ubuntu-latest` runner has `pwsh` installed.
 
-`--self-test` builds a valid fixture skill tree in a temporary directory nine times, seeds one
-violation of one check in each copy, and fails if the check that violation targets stays green. Run
+`--self-test` builds a valid fixture skill tree in a temporary directory once per check, seeds one
+violation of that check in each copy, and fails if the check that violation targets stays green. Run
 it after editing a check — a check that has never gone red is a check that has not been run.
 
-What the nine hold every skill to:
+What the checks hold every skill to:
 
 | check | what it fails on |
 | --- | --- |
@@ -81,6 +85,8 @@ What the nine hold every skill to:
 | S7 | a directory under `skills/` with no `SKILL.md` |
 | S8 | manifests that do not parse, or a plugin root that does not hold `skills/` |
 | S9 | a skill directory README.md does not mention |
+| S12 | a `scripts/init-repo.sh` without its `.ps1`, or the two writing different trees for a flag list in `S12_MATRIX`; a generated check that does not pass, or does not fail on drift; a second run that does not refuse |
+| S13 | a `.sh` or `.ps1` under `skills/`, or a `.sh.tmpl` or `.ps1.tmpl`, that does not parse |
 
 The budgets and the key list live in `scripts/check-skills.sh` as `SKILL_BODY_MAX`,
 `REFERENCE_MAX` and `STANDARD_KEYS`. Change a number there, not in a document.
