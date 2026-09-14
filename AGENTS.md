@@ -77,41 +77,45 @@ In this repository the scope also covers skill bodies and their reference files 
 Before-and-after pairs for the habits the rules remove are in
 [skills/writing-style/references/habits.md](skills/writing-style/references/habits.md).
 
-## Git state — confirm every commit
+## Git and pull requests
 
-- **Never commit, amend, push or rewrite history without confirmation in the current turn.**
-  "Write the skill", or approval of a *previous* commit, is not authorization for the next one. When
-  work is ready: stop, summarize what changed, ask.
-- **Never touch the index or restore the tree.** `git add`, `git reset`, `git stash`,
-  `git checkout -- <path>`: off-limits unless asked for in this turn. Staged versus unstaged is the
-  reviewer's record of how far they have read, and reverting your own edits to "recover" discards
-  work they have not seen. If a commit is authorized and the index is partly staged, ask which scope
-  before running anything.
-- **Subject line:** imperative, naming the change — "Fail S5 on a reference over 250 lines". Work
-  backed by a spec carries the slug, **and the commit that writes the spec is the first such
-  commit**. So a spec numbered 002 produces:
+- **Commit, amend, push or rewrite history only when the user confirms it in the current turn.**
+  A request to write the code, or approval of an earlier commit, does not cover the next commit.
+  When the work is ready, stop, summarize what changed, and ask.
+- **Leave the index and the working tree as the user left them.** Run `git add`, `git reset`,
+  `git stash` or `git checkout -- <path>` only when the user asks for it in this turn. What is
+  staged is the reviewer's record of how far they have read. When a commit is confirmed and the
+  index is partly staged, ask which scope to commit before running anything.
+- **Write the subject line in the imperative, naming the change**: "Fail the build on a missing
+  license header". Work that follows a spec carries the spec's directory name as a prefix,
+  `[NNN-slug]`, starting with the commit that writes the spec. Work without a spec carries no prefix.
+- **A change reaches the default branch through a pull request**, so CI runs before it lands.
+  Create a branch when the work starts; when finished work sits on the default branch, ask which
+  branch to move it to. Pushing, opening a pull request and merging each need their own go-ahead.
+
+Decisions for this repository:
+
+- **Default branch:** `main`.
+- **Merge strategy:** Merge, rebase or squash, chosen per pull request.
+
+*Maintained by the `git-discipline` skill down to this line. This repository's own lines go below.*
+
+In this repository:
+
+- **A spec's commit series**, for a spec numbered 002, reads:
 
   ```
-  [002-writing-style-skill] Specify the rules the skill teaches and the reference split
-  [002-writing-style-skill] Write SKILL.md and the two reference files
-  [002-writing-style-skill] List the skill in README and mention it in CONTRIBUTING
+  [002-skill-evals] Specify the eval cases and how they run
+  [002-skill-evals] Add the eval cases for writing-style
+  [002-skill-evals] Run the evals in CI and record the first results
   ```
 
-  The slug names the feature and the rest names what that commit does, so the subject after the
-  bracket does not repeat the slug. No spec in play, no prefix — do not invent one.
-
-## Changes reach `main` through a pull request
-
-- Code goes on a branch and through a PR, so [`ci.yml`](.github/workflows/ci.yml)'s two jobs run
-  before it lands. They trigger on `pull_request` and on push to `main`: a push to a branch with no
-  PR open runs nothing, so open the PR to get a build.
-- Any merge strategy — merge, rebase or squash — chosen for the nature of the PR.
-- A change touching no code may go straight to `main`: a spec, README, CONTRIBUTING or SECURITY
+- **CI runs on a pull request.** [`ci.yml`](.github/workflows/ci.yml)'s two jobs trigger on
+  `pull_request` and on push to `main`, so a push to a branch with no pull request open runs nothing.
+- **A change touching no code may go straight to `main`**: a spec, README, CONTRIBUTING or SECURITY
   wording, `AGENTS.md`/`CLAUDE.md`. `skills/`, `scripts/`, `.github/` and `.claude-plugin/` are
-  code — **a skill is code here.** No tag gates it and no release carries it: the install channels
+  code, and a skill is code here. No tag gates it and no release carries it: the install channels
   read this repository, so an edit under `skills/` reaches adopters the moment it lands on `main`.
-- Branch when the work starts. If code is ready and the checkout is `main`, ask which branch.
-- Pushing, opening a PR and merging one each need their own go-ahead.
 
 ## Specs are a decision record
 

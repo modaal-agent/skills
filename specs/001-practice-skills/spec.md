@@ -1,13 +1,14 @@
 # 001 — Four practice skills: writing style, spec-driven development, repository initialization, git discipline
 
-**Status:** Written 2026-09-11, revised in place 2026-09-14. Phases 1–3 landed 2026-09-14; phases
-4–6 not implemented (§9.1). **Baseline:** `main` at `1753a20`. **Obsoletes:** nothing.
+**Status:** Written 2026-09-11, revised in place 2026-09-14. Phases 1–4 landed 2026-09-14; phases
+5–6 not implemented (§9.1). **Baseline:** `main` at `1753a20`. **Obsoletes:** nothing.
 
 **Relates to:**
 
-- [AGENTS.md](../../AGENTS.md) — the sections "Writing style", "Git state", "Changes reach `main`
-  through a pull request", "Specs are a decision record" and "A skill is written for an agent in
-  someone else's repository". The first four are the source material for three of the skills; §2.3
+- [AGENTS.md](../../AGENTS.md) — the sections "Writing style", "Git and pull requests" (before
+  phase 4, "Git state" and "Changes reach `main` through a pull request"), "Specs are a decision
+  record" and "A skill is written for an agent in someone else's repository". The first three are
+  the source material for three of the skills; §2.3
   of this spec is the rule that keeps a skill and the section it came from from becoming two answers
   to one question.
 - [README.md](../../README.md) §"Skills" — one row per skill this spec plans.
@@ -422,7 +423,8 @@ writing-style section was 38 lines, the two git sections 36, the spec section 15
 together. The twelve rules §3.2 plans were drafted as a 34-line block. Estimates for the sections as
 the skills write them: 35–45 lines for `writing-style`, 30–40 for `git-discipline`, 15–25 for
 `spec-driven-development`. No check holds these numbers; §12.10 asks for one. As landed, the
-`writing-style` block is 35 lines.
+`writing-style` block is 35 lines, and the `git-discipline` block 23, or 22 in this repository,
+which leaves one decision line out.
 
 ---
 
@@ -834,11 +836,30 @@ literal name: two of the three repositories §1.5 measured use `main` and the th
 *Revised 2026-09-14:* only the three decisions went into the agent rules file, and the four rules
 stayed in the skill body (§2.5).
 
+**As landed in phase 4.** The block is the four rules as bullets, then "Decisions for this
+repository" with three lines holding the placeholders `DEFAULT_BRANCH`, `MERGE_STRATEGY` and
+`BRANCH_NAMES`, then the skill's last line. Step 3 replaces each placeholder with the wording in the
+"write" column of `skills/git-discipline/SKILL.md` §"The three decisions", which gives the cost of
+each option, or deletes the line when the user leaves the decision open. Two departures:
+
+- The fourth rule also states when to branch: when the work starts, and, for finished work on the
+  default branch, after asking which branch to move it to. The former `AGENTS.md` section stated it,
+  and it transfers.
+- Step 2 also lists other sections carrying git rules, and step 5 shows them for replacement. This
+  repository was the case: its rules sat under two headings, "Git state" and "Changes reach `main`
+  through a pull request".
+
+In this repository the block reads `main` and "Merge, rebase or squash, chosen per pull request."
+The branch-names line is left out: neither former section named a scheme, and the choice is the
+user's (§2.5 step 3). Below the skill's line sit this repository's own lines: an example commit
+series, when CI runs, and which changes may go straight to `main`.
+
 ### 6.2 Files
 
-`SKILL.md` alone, estimated 120–160 lines: the section's fenced block, §2.5's procedure, and the
-cost of each option for the three decisions. No reference file: the subject is four rules and three
-decisions, and splitting it would put the reader one file-open away from half of a short document.
+`SKILL.md` alone, estimated 120–160 lines, landed at 108: the section's fenced block, §2.5's
+procedure, and the cost of each option for the three decisions. No reference file: the subject is
+four rules and three decisions, and splitting it would put the reader one file-open away from half of
+a short document.
 
 ---
 
@@ -985,7 +1006,7 @@ owns a shared term is written before the skills that write that term.
 | 1 | `skills/repository-init/` — the body, the two reference files and `templates/` | It owns the agent rules file, the term the other three edit. Writing it first means no later skill invents its own spelling for that file. |
 | 2 | `skills/repository-init/scripts/` — both variants, S12 and S13 | The body written in phase 1 is the specification the two scripts are measured against. Splitting it out keeps the Markdown review and the code review in separate commits. |
 | 3 | `skills/writing-style/`, and `AGENTS.md` §"Writing style" here replaced by its block | The first consumer of §2.4's four-step edit, and the rules the remaining two are written under. |
-| 4 | `skills/git-discipline/`, and `AGENTS.md` §"Git state" and §"Changes reach `main` through a pull request" here replaced by its block under `## Git and pull requests` | The shortest; consumes the agent rules file and owns "the default branch". |
+| 4 | `skills/git-discipline/`, and the `AGENTS.md` sections "Git state" and "Changes reach `main` through a pull request" here replaced by its block under `## Git and pull requests` | The shortest; consumes the agent rules file and owns "the default branch". |
 | 5 | `skills/spec-driven-development/`, and `AGENTS.md` §"Specs are a decision record" here replaced by its block | Consumes both terms above and owns the spec directory. |
 | 6 | README rows, CONTRIBUTING mention, S10, S11, S15, S16 and their self-test cases | The index and the two cross-skill checks, once there are four names to check; the two spec checks, once every spec in the repository has an `External references` section. |
 
@@ -1023,6 +1044,7 @@ keeps the README's closing edits.
 | 1 | 2026-09-14: `SKILL.md` (158 lines), `references/agents-md-skeleton.md` (125), `references/ci-and-ignore.md` (64), `templates/` (11 files), the README row | `templates/` (§5.3); §2.4 step 3 leaves an import or a symlink (§2.4); README rows per phase (§9); §12.3 resolved (§5.2) |
 | 2 | 2026-09-14: `scripts/init-repo.sh` and `init-repo.ps1`, `skills/repository-init/SKILL.md` §"Run the script" and `allowed-tools`, S12 and S13 with their self-test cases, and the SECURITY, CONTRIBUTING, README, `AGENTS.md` and `ci.yml` edits. Before the commit, S12 and `--self-test` ran against PowerShell 7.4.20 on arm64; CI's runner has 7.6.5 (§12.9) | `--holder`, `--skip-existing`, `--path .` for `--here`, and no check or job under `--agent agents` (§5.5); S12's matrix and its check, rerun and skip rules (§8.4); S13 parses the templates (§8.5); §12.7 and §12.9 resolved |
 | 3 | 2026-09-14: `skills/writing-style/SKILL.md` (106 lines), `references/habits.md` (162), `references/tells.md` (96), `references/ai-tells.md` (119); the 35-line block in `AGENTS.md` and `CLAUDE.md` with this repository's two lines below it; the README row; `CONTRIBUTING.md` §"Licensing" on files under another license | `references/ai-tells.md` under CC BY-SA 4.0, and thirteen tells (§3.4, §12.11); the review's fourth step (§3.3); line references into `AGENTS.md` outside §1 replaced by headings (Relates to, §2.5, §3, §4.4, §9, D5) |
+| 4 | 2026-09-14: `skills/git-discipline/SKILL.md` (108 lines); the block in `AGENTS.md` and `CLAUDE.md`, replacing two sections, with this repository's lines below it; the README row | the fourth rule's branching sentence, and the search for other git sections (§6.1); this repository's branch-naming decision left open for the user (§6.1) |
 
 ---
 
@@ -1234,8 +1256,8 @@ one file, so the tells went into `skills/writing-style/references/ai-tells.md` u
 named in the skill's `license:`, and `CONTRIBUTING.md` §"Licensing" states the rule for such a file.
 
 **12.12 — Does §13.2 land in `AGENTS.md`, `CLAUDE.md` and `CONTRIBUTING.md` here before phase 1?**
-None of the three is code, so the change may go straight to `main` (AGENTS.md §"Changes reach `main`
-through a pull request"). `AGENTS.md` §"Scope" today names `skills/` and defers every other file to
+None of the three is code, so the change may go straight to `main` (AGENTS.md §"Git and pull
+requests", in this repository's lines below the skill's). `AGENTS.md` §"Scope" today names `skills/` and defers every other file to
 CONTRIBUTING.md's first rule, which states rule 1 alone. Proposed: yes, in its own commit once this
 section is approved, so phases 1–6 are written under it. **Resolved 2026-09-14 as proposed:** the
 rule landed in its own commit on `001-practice-skills`, before phase 1, for cherry-picking to
