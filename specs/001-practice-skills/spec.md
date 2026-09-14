@@ -1,21 +1,20 @@
 # 001 — Four practice skills: writing style, spec-driven development, repository initialization, git discipline
 
-**Status:** Written 2026-09-11, revised in place 2026-09-14. Phases 1–2 landed 2026-09-14; phases
-3–6 not implemented (§9.1). **Baseline:** `main` at `1753a20`. **Obsoletes:** nothing.
+**Status:** Written 2026-09-11, revised in place 2026-09-14. Phases 1–3 landed 2026-09-14; phases
+4–6 not implemented (§9.1). **Baseline:** `main` at `1753a20`. **Obsoletes:** nothing.
 
 **Relates to:**
 
-- [AGENTS.md](../../AGENTS.md) — §"Writing style" (`:40-77`), §"Git state" (`:78-100`), §"Changes
-  reach `main`" (`:101-113`), §"Specs are a decision record" (`:114-128`), §"A skill is written for
-  an agent in someone else's repository" (`:130-156`). These four sections are the source material
-  for the four skills; §5 of this spec is the rule that keeps a skill and the section it came from
-  from becoming two answers to one question.
-- [README.md](../../README.md) `:19-22` — the four planned rows, which name the four skills this
-  spec plans.
-- [CONTRIBUTING.md](../../CONTRIBUTING.md) §"Adding a skill" (`:34-50`) and §"Running the checks"
-  (`:52-81`) — the procedure and the nine checks each of the four passes.
-- [scripts/check-skills.sh](../../scripts/check-skills.sh) `:38` (`STANDARD_KEYS`), `:43-45`
-  (`SKILL_BODY_MAX`, `REFERENCE_MAX`, `DESCRIPTION_MAX`) — the budgets §3–§6 size against.
+- [AGENTS.md](../../AGENTS.md) — the sections "Writing style", "Git state", "Changes reach `main`
+  through a pull request", "Specs are a decision record" and "A skill is written for an agent in
+  someone else's repository". The first four are the source material for three of the skills; §2.3
+  of this spec is the rule that keeps a skill and the section it came from from becoming two answers
+  to one question.
+- [README.md](../../README.md) §"Skills" — one row per skill this spec plans.
+- [CONTRIBUTING.md](../../CONTRIBUTING.md) §"Adding a skill" and §"Running the checks" — the
+  procedure and the checks each of the four passes.
+- [scripts/check-skills.sh](../../scripts/check-skills.sh) — `STANDARD_KEYS`, `SKILL_BODY_MAX`,
+  `REFERENCE_MAX` and `DESCRIPTION_MAX`, the budgets §3–§6 size against.
 - [kotlin-ksp-mocks](https://github.com/modaal-agent/kotlin-ksp-mocks) spec `001-agent-skill` and
   [swift-sourcery-templates](https://github.com/modaal-agent/swift-sourcery-templates) spec
   `002-annotation-registry-and-agent-skill` — the two skills already published, and the two spec
@@ -26,8 +25,8 @@
 Every fact in §1.1–§1.7 was read from the three checkouts on 2026-09-11: this repository at
 `1753a20`, `modaal-agent/kotlin-ksp-mocks` and `modaal-agent/swift-sourcery-templates` at their
 working `main` and `master`, and `modaal-agent/duet-tutorials` at its working `main`. §1.8 was read
-on 2026-09-14 from the public pages it names. Line references into this repository's `AGENTS.md`
-outside §1 are to the file as of 2026-09-14.
+on 2026-09-14 from the public pages it names. Outside §1, this spec names parts of this repository's
+files by heading rather than by line, because phases 1–6 edit them.
 
 ---
 
@@ -35,7 +34,7 @@ outside §1 are to the file as of 2026-09-14.
 
 1. **The four skills' source material already exists, three times over.** The writing-style section
    is 38 lines and is byte-identical across `kotlin-ksp-mocks/AGENTS.md:27-64`,
-   `swift-sourcery-templates/AGENTS.md:29-66` and `AGENTS.md:40-77` here, except for three hunks
+   `swift-sourcery-templates/AGENTS.md:29-66` and `AGENTS.md:40-77` here at `1753a20`, except for three hunks
    that swap a repository-specific example (§1.2). The skill is the fourth copy, and the one a
    fifth repository installs instead of copying.
 2. **Four directories under `skills/`:** `writing-style`, `spec-driven-development`,
@@ -418,11 +417,12 @@ task-time use as the second:
 `repository-init`'s last step (§5.2) is the second route by which each of the three is invoked.
 
 **What the sections cost an adopter.** They are read in every turn of every session in the adopting
-repository. Measured in this repository's `AGENTS.md` on 2026-09-14: the writing-style section is 38
-lines (`:40-77`), the two git sections 36 (`:78-113`), the spec section 15 (`:114-128`) — 89 lines
+repository. Measured in this repository's `AGENTS.md` on 2026-09-14, before phase 3: the
+writing-style section was 38 lines, the two git sections 36, the spec section 15 — 89 lines
 together. The twelve rules §3.2 plans were drafted as a 34-line block. Estimates for the sections as
 the skills write them: 35–45 lines for `writing-style`, 30–40 for `git-discipline`, 15–25 for
-`spec-driven-development`. No check holds these numbers; §12.10 asks for one.
+`spec-driven-development`. No check holds these numbers; §12.10 asks for one. As landed, the
+`writing-style` block is 35 lines.
 
 ---
 
@@ -430,7 +430,8 @@ the skills write them: 35–45 lines for `writing-style`, 30–40 for `git-disci
 
 ### 3.1 What it teaches, and the enforcement problem
 
-The rules are `AGENTS.md:40-77`, rewritten for an adopter and extended from the sources in §1.8: the
+The rules are `AGENTS.md` §"Writing style" as it stood before phase 3 (`:40-77` at `1753a20`),
+rewritten for an adopter and extended from the sources in §1.8: the
 scope sentence, the one-sentence test (a fact the reader can verify, or an action they can take, with
 the referent named), and eleven rules after it that absorb the seven habits — mannered prose,
 aphoristic juxtaposition, dramatic reversal, negative-space phrasing, metaphor as load-bearing
@@ -446,13 +447,13 @@ when a user asks for a review.
 
 ### 3.2 The section it writes
 
-A scope sentence, twelve rules and a closing line. The scope sentence is `AGENTS.md:42-44` with this
-repository's list of documents replaced by the adopter's: every character of prose, replies in chat
-included.
+A scope sentence, twelve rules and a closing line. The scope sentence is the former section's, with
+this repository's list of documents replaced by the adopter's: every character of prose, replies in
+chat included. In the table, "former section" is `AGENTS.md` at `1753a20`.
 
 | # | rule | rests on (§1.8) | changed for an agent |
 | --- | --- | --- | --- |
-| 1 | Every sentence gives the reader a fact they can verify or an action they can take, with the referent named — the file, the line, the number, the date. If it does neither, delete it. | `AGENTS.md:46-49`; E3 | — |
+| 1 | Every sentence gives the reader a fact they can verify or an action they can take, with the referent named — the file, the line, the number, the date. If it does neither, delete it. | the former section's test; E3 | — |
 | 2 | Write the way you would say it to a colleague. Reread each sentence and rewrite any you would not say aloud. | E1, E7, E10 | Ogilvy and Graham read the draft aloud; the agent rereads it |
 | 3 | Short words, short sentences, short paragraphs. Split a sentence over 25 words; keep a paragraph to five sentences. | E1, E4, E8 | — |
 | 4 | Omit needless words: "in order to", "just", "simply", "please note", "it is important to note", "additionally" at a sentence start. | E3, E5, E8, E9 | — |
@@ -461,15 +462,21 @@ included.
 | 7 | Definite, specific, concrete: the number over the adjective, the path over "the config", the date over "recently". | E3 | — |
 | 8 | No figure of speech you have seen in print, and no metaphor as the only statement of a point. Documents do not owe, want or know things; name who does the work. | E2, E8, E9 | — |
 | 9 | No jargon, buzzwords or extravagant adjectives, with a named list: leverage, robust, streamline, empower, tackle, facilitate, vibrant, groundbreaking, pivotal. | E1, E2, E4, E8, E9, E11 | — |
-| 10 | No significance inflation: nothing "underscores", "highlights" or "marks a turning point". Give the before value, the after value and the date measured. | E11; `AGENTS.md:62-63` | — |
-| 11 | No rule of three for rhythm, no aphoristic juxtaposition, no dramatic reversal, no rhetorical contrast standing in for content, no closing paragraph that draws the moral. End when the content ends. | E11; `AGENTS.md:60-63`, `:72-76` | — |
+| 10 | No significance inflation: nothing "underscores", "highlights" or "marks a turning point". Give the before value, the after value and the date measured. | E11; the former section's dramatic reversals | — |
+| 11 | No rule of three for rhythm, no aphoristic juxtaposition, no dramatic reversal, no rhetorical contrast standing in for content, no closing paragraph that draws the moral. End when the content ends. | E11; the former section's aphoristic juxtapositions, reversals, rhetorical contrast and closing paragraph | — |
 | 12 | Say what the reader is to do and where: the command, the file, the person to ask. | E1, E10 | Ogilvy's tenth hint, "Go and tell the guy what you want", is left out; the agent's report is its only channel to the user |
 
 Closing line, from Orwell's sixth rule: break any of these rules sooner than write something unclear.
 
+**As landed in phase 3.** The block is 35 lines in `skills/writing-style/SKILL.md` §"The section":
+the heading, the scope sentence, the twelve rules as imperatives with a bold lead, the closing line,
+and a last line reading "Maintained by the `writing-style` skill down to this line. This
+repository's own lines go below." This repository's `AGENTS.md` carries it byte for byte, followed
+by two lines of its own: the scope includes `skills/`, and where the before-and-after pairs are.
+
 Where the seven habits go:
 
-| habit (`AGENTS.md:53-76`) | rule | before/after pair |
+| habit (the former section's list) | rule | before/after pair |
 | --- | --- | --- |
 | mannered prose | 8 | `references/habits.md` |
 | aphoristic juxtaposition | 11 | `references/habits.md` |
@@ -492,6 +499,11 @@ Used when the skill is invoked to review a draft, the agent's or the user's:
 Ogilvy's hints 7 and 8 — send nothing on the day it is written, and have a colleague improve it — are
 left out: the agent's reply is due in the turn, and the user reviewing that reply is the colleague.
 
+**As landed in phase 3.** Step 2 runs the searches in both `references/tells.md` and
+`references/ai-tells.md`, and reads a hit as a sentence to reread, since some listed words are
+literal in software: a git `commit`, an API `key`. A fourth step reports each change as the
+sentence, the rule it broke and the rewrite, and applies changes to a file only when the user asks.
+
 ### 3.4 Files
 
 - `SKILL.md`, estimated 110–160 lines: the section's fenced block (§3.2), §2.5's procedure, and the
@@ -509,6 +521,25 @@ Each file fits the budgets S5 enforces (§1.6).
 *Revised 2026-09-14:* planned as `SKILL.md` and one `references/rewrites.md`. The tells from §1.8
 needed a second reference file, and `rewrites.md` is renamed `habits.md` for what it holds.
 
+**As landed in phase 3:**
+
+- `SKILL.md`, 106 lines: the block, the six-step write procedure (§2.5 without its step 3, which is
+  `git-discipline`'s), and the four-step review.
+- `references/habits.md`, 162 lines: the seven habits, each with three or four short pairs and one
+  longer rewrite naming what was deleted. The examples are invented, apart from those kept from the
+  former `AGENTS.md` section.
+- `references/tells.md`, 96 lines: eight filler searches, E8's 37 words with an exceptions column
+  for uses literal in software, and sentence-case headings, with the OGL v3.0 and CC BY 4.0
+  attributions.
+- `references/ai-tells.md`, 119 lines: thirteen tells from E11, each with an extended regular
+  expression that runs under GNU and BSD `grep`, and the rule that removes it. Licensed CC BY-SA 4.0
+  in its opening lines and in the skill's `license:`.
+
+*Revised 2026-09-14, phase 3:* the E11 tells were planned inside `references/tells.md`. They moved
+to their own file under CC BY-SA 4.0 (§12.11). They number thirteen, where §1.8 counted twelve,
+because E11 files "Section summaries" and "Didactic disclaimers" as two historical indicators and
+the file keeps both, marked historical.
+
 ### 3.5 What stays out of the skill
 
 - **The quotations and the argument from the sources.** AGENTS.md §"A skill is written for an agent
@@ -518,9 +549,9 @@ needed a second reference file, and `rewrites.md` is renamed `habits.md` for wha
 - **Attributions inside the section.** A source name after each rule adds twelve parentheticals to
   text read in every turn and gives the agent no action to take. `SKILL.md` and the section carry
   none; `references/tells.md` carries the attribution its licences require.
-- **Wikipedia's prose.** `references/tells.md` states each tell in the skill's own words, with the
-  page's section name, its search terms and an attribution line. Whether those search terms bring
-  CC BY-SA 4.0's share-alike terms with them is §12.11.
+- **Wikipedia's prose.** `references/ai-tells.md` states each tell in the skill's own words, with a
+  search and an attribution. Whether those search terms bring CC BY-SA 4.0's share-alike terms with
+  them is §12.11, resolved by licensing that one file under CC BY-SA 4.0.
 
 ### 3.6 What should invoke it
 
@@ -609,7 +640,7 @@ rule a phase's result edits the plan in place while the feature is in progress, 
 wording stays in `git log -p`. A reader of a finished spec gets the notes on important overturned
 decisions in the document, and finds minor revisions only in git history.
 
-**In this repository.** `AGENTS.md:114-128` adopted the rule on 2026-09-14, before phase 1, with
+**In this repository.** `AGENTS.md` §"Specs are a decision record" adopted the rule on 2026-09-14, before phase 1, with
 the definition of done written against `main`. This spec was revised in place under it on the same
 day. Phase 5 replaces that section with the skill's block (§9).
 
@@ -953,9 +984,9 @@ owns a shared term is written before the skills that write that term.
 | --- | --- | --- |
 | 1 | `skills/repository-init/` — the body, the two reference files and `templates/` | It owns the agent rules file, the term the other three edit. Writing it first means no later skill invents its own spelling for that file. |
 | 2 | `skills/repository-init/scripts/` — both variants, S12 and S13 | The body written in phase 1 is the specification the two scripts are measured against. Splitting it out keeps the Markdown review and the code review in separate commits. |
-| 3 | `skills/writing-style/`, and `AGENTS.md:40-77` here replaced by its block | The first consumer of §2.4's four-step edit, and the rules the remaining two are written under. |
-| 4 | `skills/git-discipline/`, and `AGENTS.md:78-113` here replaced by its block under `## Git and pull requests` | The shortest; consumes the agent rules file and owns "the default branch". |
-| 5 | `skills/spec-driven-development/`, and `AGENTS.md:114-128` here replaced by its block | Consumes both terms above and owns the spec directory. |
+| 3 | `skills/writing-style/`, and `AGENTS.md` §"Writing style" here replaced by its block | The first consumer of §2.4's four-step edit, and the rules the remaining two are written under. |
+| 4 | `skills/git-discipline/`, and `AGENTS.md` §"Git state" and §"Changes reach `main` through a pull request" here replaced by its block under `## Git and pull requests` | The shortest; consumes the agent rules file and owns "the default branch". |
+| 5 | `skills/spec-driven-development/`, and `AGENTS.md` §"Specs are a decision record" here replaced by its block | Consumes both terms above and owns the spec directory. |
 | 6 | README rows, CONTRIBUTING mention, S10, S11, S15, S16 and their self-test cases | The index and the two cross-skill checks, once there are four names to check; the two spec checks, once every spec in the repository has an `External references` section. |
 
 §5.2 has `repository-init` naming the other three in its last step, which looks like a cycle against
@@ -963,15 +994,19 @@ this order and is not: that reference is a name and a one-line statement of what
 (§2.3), so phase 1 needs no text from phases 2–5.
 
 Each phase records in this spec what it landed and where it departed from the plan, by editing the
-plan in place, per §4.1 step 7 and `AGENTS.md:114-128`, the rule this spec is itself written under.
+plan in place, per §4.1 step 7 and `AGENTS.md` §"Specs are a decision record", the rule this spec
+is itself written under.
 Phase 6's commit closes the feature (§4.4); after it, this spec takes additions only.
 
 Phases 3–5 make this repository's `AGENTS.md` the first install of each section (AGENTS.md §"The
 skills are the product"), and copy the file to `CLAUDE.md` in the same commit. Lines specific to
-this repository move below each section's last line (§2.5): the CI jobs a pull request runs
-(`:103-105`), which directories count as code (`:107-110`), and the local examples at `:66-67` and
-`:88-96`. D5 records why this file keeps a full copy of each section. Phase 6's README edit rewrites
-`README.md:20`, which still names "the append-only ledger rule".
+this repository move below each section's last line (§2.5): the CI jobs a pull request runs, which
+directories count as code, and the local examples in the writing and git sections. D5 records why
+this file keeps a full copy of each section.
+
+*Revised 2026-09-14, phase 3:* this paragraph had phase 6 rewrite the README row that named "the
+append-only ledger rule". That row changed to the decision-record rule in the commit that changed
+the rule, before phase 1.
 
 §13's rule reached this repository's `AGENTS.md`, `CLAUDE.md` and `CONTRIBUTING.md` in its own
 commit on 2026-09-14, before phase 1 (§12.12), and reaches `spec-driven-development` in phase 5.
@@ -987,6 +1022,7 @@ keeps the README's closing edits.
 | --- | --- | --- |
 | 1 | 2026-09-14: `SKILL.md` (158 lines), `references/agents-md-skeleton.md` (125), `references/ci-and-ignore.md` (64), `templates/` (11 files), the README row | `templates/` (§5.3); §2.4 step 3 leaves an import or a symlink (§2.4); README rows per phase (§9); §12.3 resolved (§5.2) |
 | 2 | 2026-09-14: `scripts/init-repo.sh` and `init-repo.ps1`, `skills/repository-init/SKILL.md` §"Run the script" and `allowed-tools`, S12 and S13 with their self-test cases, and the SECURITY, CONTRIBUTING, README, `AGENTS.md` and `ci.yml` edits. Before the commit, S12 and `--self-test` ran against PowerShell 7.4.20 on arm64; CI's runner has 7.6.5 (§12.9) | `--holder`, `--skip-existing`, `--path .` for `--here`, and no check or job under `--agent agents` (§5.5); S12's matrix and its check, rerun and skip rules (§8.4); S13 parses the templates (§8.5); §12.7 and §12.9 resolved |
+| 3 | 2026-09-14: `skills/writing-style/SKILL.md` (106 lines), `references/habits.md` (162), `references/tells.md` (96), `references/ai-tells.md` (119); the 35-line block in `AGENTS.md` and `CLAUDE.md` with this repository's two lines below it; the README row; `CONTRIBUTING.md` §"Licensing" on files under another license | `references/ai-tells.md` under CC BY-SA 4.0, and thirteen tells (§3.4, §12.11); the review's fourth step (§3.3); line references into `AGENTS.md` outside §1 replaced by headings (Relates to, §2.5, §3, §4.4, §9, D5) |
 
 ---
 
@@ -1019,7 +1055,7 @@ measures three repositories under one set of rules disagreeing on default branch
 branch naming. A skill that picks one is wrong in two of the three repositories that already exist.
 
 **D5 — This repository's agent rules file keeps its own copy of the rules, and does not shrink to a
-pointer.** After phases 3–5, `AGENTS.md:40-128`, and its `CLAUDE.md` copy, duplicate three skills'
+pointer.** After phases 3–5, three sections of `AGENTS.md`, and its `CLAUDE.md` copy, duplicate three skills'
 blocks. Replacing them with "see the `writing-style` skill" would leave an agent whose session has
 not invoked that skill with no rules at all — the same failure §3.1 describes. The duplication is
 the cost of the rules being resident. Lines specific to this repository sit below each section's
@@ -1190,7 +1226,12 @@ the budget once three blocks exist to measure.
 **12.11 — Does `references/tells.md` take on CC BY-SA 4.0's share-alike terms?** It carries search
 terms taken from Wikipedia's "Signs of AI writing" (§3.5). Proposed: read the licence's terms for
 adapted material before phase 3, and move the Wikipedia-derived rows to a file carrying that licence
-if they apply.
+if they apply. **Resolved 2026-09-14 in phase 3.** E27 §1(a) defines Adapted Material as material
+"subject to Copyright and Similar Rights" that is derived from the licensed material, and §2(a)(2)
+and §8(a) leave uses that need no permission outside the licence. Whether a list of search words and
+restated observations needs permission is a legal question. Treating it as adapted material costs
+one file, so the tells went into `skills/writing-style/references/ai-tells.md` under CC BY-SA 4.0,
+named in the skill's `license:`, and `CONTRIBUTING.md` §"Licensing" states the rule for such a file.
 
 **12.12 — Does §13.2 land in `AGENTS.md`, `CLAUDE.md` and `CONTRIBUTING.md` here before phase 1?**
 None of the three is code, so the change may go straight to `main` (AGENTS.md §"Changes reach `main`
@@ -1300,7 +1341,7 @@ review.
 
 ## 14. External references
 
-Every reference this spec makes to something outside this repository. E1–E15, E21 and E23–E26
+Every reference this spec makes to something outside this repository. E1–E15, E21 and E23–E27
 were read on 2026-09-14. E16–E20 were read on 2026-09-11, and E16–E18 again on 2026-09-14 for their
 HEADs. E22 was read on 2026-09-14. Where §1 read a repository without recording a commit, the pin is
 that repository's HEAD on 2026-09-14, and §13.1 records the values that differ.
@@ -1333,3 +1374,4 @@ that repository's HEAD on 2026-09-14, and §13.1 records the values that differ.
 | E24 | Claude Code documentation, "How Claude remembers your project": which instruction files load, and §"AGENTS.md" | yes | https://code.claude.com/docs/en/memory; unversioned, read 2026-09-14 | §2.4 |
 | E25 | Claude Code documentation, "Settings files and precedence": `.claude/settings.local.json` as personal, per-project settings | yes | https://code.claude.com/docs/en/settings; unversioned, read 2026-09-14 | §5.3 |
 | E26 | Apache License, Version 2.0, plain text | yes | https://www.apache.org/licenses/LICENSE-2.0.txt; SHA-256 `cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30`, fetched 2026-09-14 | §5.3 |
+| E27 | Creative Commons Attribution-ShareAlike 4.0 International, legal code: §1(a), §2(a)(2), §3(b), §8(a) | yes | https://creativecommons.org/licenses/by-sa/4.0/legalcode.en; the 4.0 text is fixed, read 2026-09-14 | §12.11 |

@@ -106,5 +106,11 @@ that one directory.
 ## Licensing
 
 MIT, inbound = outbound. Opening a pull request means your contribution is licensed under the
-[MIT License](LICENSE). Each `SKILL.md` carries `license: MIT` in its frontmatter, so the license
+[MIT License](LICENSE). Each `SKILL.md` carries `license:` in its frontmatter, so the license
 travels with the directory through every install channel.
+
+A file adapted from material under another license carries that license, states it in its opening
+lines, and is named in its skill's `license:`. Today that is one file:
+`skills/writing-style/references/ai-tells.md`, adapted from a Wikipedia page and licensed under
+CC BY-SA 4.0. Material under a license that allows adaptation with attribution, such as the Open
+Government Licence v3.0 or CC BY 4.0, may sit in an MIT file with its attribution in that file.

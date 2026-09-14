@@ -37,43 +37,45 @@ seconds. Without `pwsh` on the PATH, S12 and S13's PowerShell half report skippe
   contributor what to do in *this* repository; the skill tells an adopter's agent what to do in
   *theirs*. An edit that changes the rule lands in both, in the same commit.
 
-## Writing style: state facts and actions, no aphorisms
+## Writing style
 
-**Scope: every character of prose you produce for this project.** Specs, docs, skill bodies, code
-comments, commit messages, PR bodies, review findings, and **your replies in chat**. There is no
-"informal" channel where this relaxes.
+**Scope: every piece of prose an agent writes here**: documents, code comments, commit messages,
+pull-request descriptions, review comments, and replies in chat.
 
-**The test, applied to each sentence:** does it give the reader **a fact they can verify** or **an
-action they can take**, with the referent named — the file, the line, the setting, the command, the
-number? If it does neither, delete it. A sentence that only characterizes the work, dramatizes a
-finding, or summarizes how significant something is carries no information the reader can act on.
+1. **Every sentence gives the reader a fact they can check or an action they can take**, with the
+   referent named: the file, the line, the command, the number, the date. Delete a sentence that
+   does neither.
+2. **Write the way you would say it to a colleague.** Reread each sentence, and rewrite any you
+   would not say aloud.
+3. **Use short words, short sentences and short paragraphs.** Split a sentence over 25 words, and
+   keep a paragraph to five sentences.
+4. **Cut needless words**: "in order to", "just", "simply", "please note", "it is important to
+   note", and "additionally" at the start of a sentence.
+5. **Use the active voice, and start a statement with its verb.** Write "is" where "serves as" or
+   "stands as" appears, and rewrite "there is" and "there are" around the subject.
+6. **Say what is.** Replace "it's not X, it's Y", "not just X but Y", and any phrasing that names
+   only what is absent, with a statement of what is there.
+7. **Be definite, specific and concrete**: the number instead of the adjective, the path instead of
+   "the config", the date instead of "recently".
+8. **Use no figure of speech you have seen in print, and no metaphor as the only statement of a
+   point.** Documents do not owe, want or know things: name who does the work, and where.
+9. **Use no jargon, buzzwords or extravagant adjectives**, such as leverage, robust, streamline,
+   empower, tackle, facilitate, vibrant, groundbreaking and pivotal.
+10. **Do not inflate significance.** Nothing "underscores", "highlights" or "marks a turning
+    point". Give the value before, the value after, and the date it was measured.
+11. **Write no rhythm devices**: no list of three kept for its cadence, no aphoristic pairing, no
+    dramatic reversal, no contrast standing in for content, no closing line that draws a moral.
+    End when the content ends.
+12. **Say what the reader is to do, and where**: the command to run, the file to edit, the person
+    to ask.
 
-Habits to avoid (common LLM-isms):
+Break any of these rules sooner than write something unclear.
 
-- **Mannered prose** substitutes metaphor and flourish for direct statement. Instead of "a parameter
-  worth varying," the mannered writer produces "a dial worth turning." Instead of "this point still
-  matters," they write "this point earns its keep." The phrases exist to display the writer, not to
-  convey the idea, and readers can tell. That is why mannered prose irritates: it makes the reader
-  work harder so the writer can perform. It is also imprecise — metaphors drag in connotations the
-  writer did not choose and cannot control. **The fix is to say what you mean. When a literal phrase
-  is available, use it.**
-- **Aphoristic juxtapositions** ("Free now, a second migration later"). State the trade-off
-  explicitly: what it costs now, what it costs later, which option you recommend.
-- **Dramatic reversals and punchlines** ("that direction has reversed"; "upgraded those steps from
-  redundant to breaking"). Give the before value, the after value, and the date measured.
-- **Negative-space phrasing** ("checked by nobody"; "not cosmetic"; "not the thing to move"). Say
-  which check is missing, in which file, what it costs, and when to add it. If the point is that X
-  is wrong, name what to do instead — "move the paragraph to `references/troubleshooting.md`", not
-  "`SKILL.md` is not the place for it".
-- **Metaphor or personification as the load-bearing content** ("a fresh repository has no code to
-  fight"; "the gate now has teeth"; "what the spec still owes"). A metaphor may decorate a point
-  already stated literally; it may not be the only statement of that point. Documents do not owe,
-  want, or know things — name who does the work, in which file, by when.
-- **Rhetorical contrast standing in for content** ("verified, not merely committed"; "it is not that
-  X, it is that Y"). State both facts separately and drop the contrast.
-- **The closing paragraph that generalizes the lesson.** This is where aphorisms concentrate: a
-  section ends, and the urge is to extract a portable moral. Either write a concrete rule with a
-  named home — the check to add, the file to add it to — or write nothing.
+*Maintained by the `writing-style` skill down to this line. This repository's own lines go below.*
+
+In this repository the scope also covers skill bodies and their reference files under `skills/`.
+Before-and-after pairs for the habits the rules remove are in
+[skills/writing-style/references/habits.md](skills/writing-style/references/habits.md).
 
 ## Git state — confirm every commit
 
