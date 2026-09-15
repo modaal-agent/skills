@@ -1198,6 +1198,12 @@ from `main`, and carries none. The script's flag is `--changelog`, default off, 
 the rule rather than the flag — an adopter who publishes nothing should not be told to keep a file
 nobody reads.
 
+*Added 2026-09-15:* the claim above that this repository publishes nothing versioned no longer
+holds. From release 0.1.0, a version tag publishes one `.zip` per skill for claude.ai and the Claude
+desktop app, and an adopter keeps that archive until they upload a newer one. So this repository
+carries a `CHANGELOG.md`, under the rule D8 states. The rule itself stands; the procedure is
+`CONTRIBUTING.md` §"Releasing".
+
 **D9 — `--agent` accepts only agent files this project has measured, and grows by measurement.**
 Resolves §12.6 in the conservative direction it proposed. Today that is two values: `agents`
 (`AGENTS.md` alone) and `claude` (`AGENTS.md` + `CLAUDE.md`), both read from §1.4. `GEMINI.md`,

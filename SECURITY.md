@@ -3,8 +3,10 @@
 Report a vulnerability through GitHub's private reporting on this repository
 (**Security → Report a vulnerability**). Do not open a public issue for it.
 
-Supported: `main`. This repository publishes no tags and no release assets — every install channel
-reads `main` — so a fix is published by landing there.
+Supported: `main` and the latest release. Three of the four install channels read `main`, so a fix
+reaches them when it lands there. claude.ai and the Claude desktop app take a release's archives, so
+a fix reaches them in the PATCH release cut for it ([CONTRIBUTING.md](CONTRIBUTING.md)
+§"Releasing"). An earlier release gets no fix.
 
 ## What counts as a vulnerability here
 

@@ -4,6 +4,8 @@ on:
   push:
     branches: [main]
   pull_request:
+  # release.yml runs both jobs at a version tag, before it builds the archives.
+  workflow_call:
 
 jobs:
   # ── Rules lane ───────────────────────────────────────────────────

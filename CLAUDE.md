@@ -13,6 +13,8 @@ and fails if they differ.
 | --- | --- |
 | what this repository publishes and how an adopter installs it | [README.md](README.md) |
 | how a skill is added, what the checks hold it to, how it reaches adopters | [CONTRIBUTING.md](CONTRIBUTING.md) |
+| how a version is released, and which part of it a change bumps | [CONTRIBUTING.md](CONTRIBUTING.md) §"Releasing" |
+| what each release changed | [CHANGELOG.md](CHANGELOG.md) |
 | how a vulnerability is reported and what counts as one here | [SECURITY.md](SECURITY.md) |
 | what an adopter's agent is told to do | `skills/<name>/SKILL.md` |
 | the plan for a change too big to carry in a commit message | `specs/` |
@@ -112,10 +114,14 @@ In this repository:
 
 - **CI runs on a pull request.** [`ci.yml`](.github/workflows/ci.yml)'s two jobs trigger on
   `pull_request` and on push to `main`, so a push to a branch with no pull request open runs nothing.
-- **A change touching no code may go straight to `main`**: a spec, README, CONTRIBUTING or SECURITY
-  wording, `AGENTS.md`/`CLAUDE.md`. `skills/`, `scripts/`, `.github/` and `.claude-plugin/` are
-  code, and a skill is code here. No tag gates it and no release carries it: the install channels
-  read this repository, so an edit under `skills/` reaches adopters the moment it lands on `main`.
+- **A change touching no code may go straight to `main`**: a spec, README, CONTRIBUTING, SECURITY
+  or CHANGELOG wording, `AGENTS.md`/`CLAUDE.md`. `skills/`, `scripts/`, `.github/` and
+  `.claude-plugin/` are code, and a skill is code here. Three of the four install channels read
+  `main`, so an edit under `skills/` reaches their adopters the moment it lands there.
+- **A version tag publishes a release.** Pushing an `X.Y.Z` tag runs
+  [`release.yml`](.github/workflows/release.yml), which publishes one `.zip` per skill for claude.ai
+  and the Claude desktop app. Create, push or delete a tag only when the user confirms it in the
+  current turn. The procedure is [CONTRIBUTING.md](CONTRIBUTING.md) §"Releasing".
 
 ## Specs
 
@@ -189,9 +195,11 @@ In this repository:
 
 - **README.md** — what this repository publishes: the skill index, the install channels, the layout.
 - **CONTRIBUTING.md** — how a skill is added, what the checks hold it to, how it reaches adopters,
-  licensing.
+  how a version is released, licensing.
 - **SECURITY.md** — how a vulnerability is reported and what counts as one for a repository whose
   product is instructions an agent executes.
+- **CHANGELOG.md** — what each release changed, for an adopter holding an earlier release's
+  archives.
 - **AGENTS.md / CLAUDE.md** — rules only, and one file in two places. If you are about to write a
   paragraph explaining what something *is*, it belongs in one of the other two.
 - **skills/`<name>`/** — what an agent does in an adopting repository, and nothing about how this
@@ -235,5 +243,5 @@ the public internet must be able to resolve every reference in it.
 
 - A skill that duplicates one already published beside the code it documents belongs in that
   repository, not this one. README.md lists the two that live elsewhere and why.
-- There are no release tags and no release assets. A change reaches adopters by landing on `main`;
-  there is nothing to version and nothing to publish.
+- A release carries one `.zip` per skill, for claude.ai and the Claude desktop app, and nothing
+  else. The other three install channels read `main`, and no tag gates them.

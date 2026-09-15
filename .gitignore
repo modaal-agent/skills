@@ -1,5 +1,8 @@
 # macOS
 .DS_Store
 
+# Skill archives scripts/package-skills.sh writes
+dist/
+
 # Claude Code local state
 .claude/
