@@ -20,13 +20,13 @@ and fails if they differ.
 Run from the repository root:
 
 ```bash
-scripts/check-skills.sh              # the nine checks the `skills` job runs
+scripts/check-skills.sh              # the checks the `skills` job runs
 scripts/check-skills.sh --self-test  # each check against a seeded violation
 cmp AGENTS.md CLAUDE.md              # what the `rules` job runs
 ```
 
-Neither needs a toolchain — Markdown and JSON through `grep`, `awk` and `python3` — so both report in
-seconds.
+Neither needs a build: `grep`, `awk`, `python3`, and `pwsh` for S12 and S13, so both report in
+seconds. Without `pwsh` on the PATH, S12 and S13's PowerShell half report skipped; CI runs them.
 
 ## The skills are the product, and this repository is their first consumer
 
@@ -37,95 +37,115 @@ seconds.
   contributor what to do in *this* repository; the skill tells an adopter's agent what to do in
   *theirs*. An edit that changes the rule lands in both, in the same commit.
 
-## Writing style: state facts and actions, no aphorisms
+## Writing style
 
-**Scope: every character of prose you produce for this project.** Specs, docs, skill bodies, code
-comments, commit messages, PR bodies, review findings, and **your replies in chat**. There is no
-"informal" channel where this relaxes.
+**Scope: every piece of prose an agent writes here**: documents, code comments, commit messages,
+pull-request descriptions, review comments, and replies in chat.
 
-**The test, applied to each sentence:** does it give the reader **a fact they can verify** or **an
-action they can take**, with the referent named — the file, the line, the setting, the command, the
-number? If it does neither, delete it. A sentence that only characterizes the work, dramatizes a
-finding, or summarizes how significant something is carries no information the reader can act on.
+1. **Every sentence gives the reader a fact they can check or an action they can take**, with the
+   referent named: the file, the line, the command, the number, the date. Delete a sentence that
+   does neither.
+2. **Write the way you would say it to a colleague.** Reread each sentence, and rewrite any you
+   would not say aloud.
+3. **Use short words, short sentences and short paragraphs.** Split a sentence over 25 words, and
+   keep a paragraph to five sentences.
+4. **Cut needless words**: "in order to", "just", "simply", "please note", "it is important to
+   note", and "additionally" at the start of a sentence.
+5. **Use the active voice, and start a statement with its verb.** Write "is" where "serves as" or
+   "stands as" appears, and rewrite "there is" and "there are" around the subject.
+6. **Say what is.** Replace "it's not X, it's Y", "not just X but Y", and any phrasing that names
+   only what is absent, with a statement of what is there.
+7. **Be definite, specific and concrete**: the number instead of the adjective, the path instead of
+   "the config", the date instead of "recently".
+8. **Use no figure of speech you have seen in print, and no metaphor as the only statement of a
+   point.** Documents do not owe, want or know things: name who does the work, and where.
+9. **Use no jargon, buzzwords or extravagant adjectives**, such as leverage, robust, streamline,
+   empower, tackle, facilitate, vibrant, groundbreaking and pivotal.
+10. **Do not inflate significance.** Nothing "underscores", "highlights" or "marks a turning
+    point". Give the value before, the value after, and the date it was measured.
+11. **Write no rhythm devices**: no list of three kept for its cadence, no aphoristic pairing, no
+    dramatic reversal, no contrast standing in for content, no closing line that draws a moral.
+    End when the content ends.
+12. **Say what the reader is to do, and where**: the command to run, the file to edit, the person
+    to ask.
 
-Habits to avoid (common LLM-isms):
+Break any of these rules sooner than write something unclear.
 
-- **Mannered prose** substitutes metaphor and flourish for direct statement. Instead of "a parameter
-  worth varying," the mannered writer produces "a dial worth turning." Instead of "this point still
-  matters," they write "this point earns its keep." The phrases exist to display the writer, not to
-  convey the idea, and readers can tell. That is why mannered prose irritates: it makes the reader
-  work harder so the writer can perform. It is also imprecise — metaphors drag in connotations the
-  writer did not choose and cannot control. **The fix is to say what you mean. When a literal phrase
-  is available, use it.**
-- **Aphoristic juxtapositions** ("Free now, a second migration later"). State the trade-off
-  explicitly: what it costs now, what it costs later, which option you recommend.
-- **Dramatic reversals and punchlines** ("that direction has reversed"; "upgraded those steps from
-  redundant to breaking"). Give the before value, the after value, and the date measured.
-- **Negative-space phrasing** ("checked by nobody"; "not cosmetic"; "not the thing to move"). Say
-  which check is missing, in which file, what it costs, and when to add it. If the point is that X
-  is wrong, name what to do instead — "move the paragraph to `references/troubleshooting.md`", not
-  "`SKILL.md` is not the place for it".
-- **Metaphor or personification as the load-bearing content** ("a fresh repository has no code to
-  fight"; "the gate now has teeth"; "what the spec still owes"). A metaphor may decorate a point
-  already stated literally; it may not be the only statement of that point. Documents do not owe,
-  want, or know things — name who does the work, in which file, by when.
-- **Rhetorical contrast standing in for content** ("verified, not merely committed"; "it is not that
-  X, it is that Y"). State both facts separately and drop the contrast.
-- **The closing paragraph that generalizes the lesson.** This is where aphorisms concentrate: a
-  section ends, and the urge is to extract a portable moral. Either write a concrete rule with a
-  named home — the check to add, the file to add it to — or write nothing.
+*Maintained by the `writing-style` skill down to this line. This repository's own lines go below.*
 
-## Git state — confirm every commit
+In this repository the scope also covers skill bodies and their reference files under `skills/`.
+Before-and-after pairs for the habits the rules remove are in
+[skills/writing-style/references/habits.md](skills/writing-style/references/habits.md).
 
-- **Never commit, amend, push or rewrite history without confirmation in the current turn.**
-  "Write the skill", or approval of a *previous* commit, is not authorization for the next one. When
-  work is ready: stop, summarize what changed, ask.
-- **Never touch the index or restore the tree.** `git add`, `git reset`, `git stash`,
-  `git checkout -- <path>`: off-limits unless asked for in this turn. Staged versus unstaged is the
-  reviewer's record of how far they have read, and reverting your own edits to "recover" discards
-  work they have not seen. If a commit is authorized and the index is partly staged, ask which scope
-  before running anything.
-- **Subject line:** imperative, naming the change — "Fail S5 on a reference over 250 lines". Work
-  backed by a spec carries the slug, **and the commit that writes the spec is the first such
-  commit**. So a spec numbered 002 produces:
+## Git and pull requests
+
+- **Commit, amend, push or rewrite history only when the user confirms it in the current turn.**
+  A request to write the code, or approval of an earlier commit, does not cover the next commit.
+  When the work is ready, stop, summarize what changed, and ask.
+- **Leave the index and the working tree as the user left them.** Run `git add`, `git reset`,
+  `git stash` or `git checkout -- <path>` only when the user asks for it in this turn. What is
+  staged is the reviewer's record of how far they have read. When a commit is confirmed and the
+  index is partly staged, ask which scope to commit before running anything.
+- **Write the subject line in the imperative, naming the change**: "Fail the build on a missing
+  license header". Work that follows a spec carries the spec's directory name as a prefix,
+  `[NNN-slug]`, starting with the commit that writes the spec. Work without a spec carries no prefix.
+- **A change reaches the default branch through a pull request**, so CI runs before it lands.
+  Create a branch when the work starts; when finished work sits on the default branch, ask which
+  branch to move it to. Pushing, opening a pull request and merging each need their own go-ahead.
+
+Decisions for this repository:
+
+- **Default branch:** `main`.
+- **Merge strategy:** Merge, rebase or squash, chosen per pull request.
+
+*Maintained by the `git-discipline` skill down to this line. This repository's own lines go below.*
+
+In this repository:
+
+- **A spec's commit series**, for a spec numbered 002, reads:
 
   ```
-  [002-writing-style-skill] Specify the rules the skill teaches and the reference split
-  [002-writing-style-skill] Write SKILL.md and the two reference files
-  [002-writing-style-skill] List the skill in README and mention it in CONTRIBUTING
+  [002-skill-evals] Specify the eval cases and how they run
+  [002-skill-evals] Add the eval cases for writing-style
+  [002-skill-evals] Run the evals in CI and record the first results
   ```
 
-  The slug names the feature and the rest names what that commit does, so the subject after the
-  bracket does not repeat the slug. No spec in play, no prefix — do not invent one.
-
-## Changes reach `main` through a pull request
-
-- Code goes on a branch and through a PR, so [`ci.yml`](.github/workflows/ci.yml)'s two jobs run
-  before it lands. They trigger on `pull_request` and on push to `main`: a push to a branch with no
-  PR open runs nothing, so open the PR to get a build.
-- Any merge strategy — merge, rebase or squash — chosen for the nature of the PR.
-- A change touching no code may go straight to `main`: a spec, README, CONTRIBUTING or SECURITY
+- **CI runs on a pull request.** [`ci.yml`](.github/workflows/ci.yml)'s two jobs trigger on
+  `pull_request` and on push to `main`, so a push to a branch with no pull request open runs nothing.
+- **A change touching no code may go straight to `main`**: a spec, README, CONTRIBUTING or SECURITY
   wording, `AGENTS.md`/`CLAUDE.md`. `skills/`, `scripts/`, `.github/` and `.claude-plugin/` are
-  code — **a skill is code here.** No tag gates it and no release carries it: the install channels
+  code, and a skill is code here. No tag gates it and no release carries it: the install channels
   read this repository, so an edit under `skills/` reaches adopters the moment it lands on `main`.
-- Branch when the work starts. If code is ready and the checkout is `main`, ask which branch.
-- Pushing, opening a PR and merging one each need their own go-ahead.
 
-## Specs are a decision record
+## Specs
 
-- **While the feature is being worked on, a spec may be edited in place** to keep the plan current.
-  Where later work overturns an important earlier decision, leave a short note saying what it
-  replaced and why.
-- **Once the feature is done, a spec is amended by addition.** A feature is done when the commit
-  that lands its last planned phase reaches `main`. An addition that supersedes an existing claim
-  names it by section, and the superseded section takes a line pointing forward to the addition.
-- **A closed spec may take a follow-up file beside it** instead of an appended section —
-  `specs/001-<slug>/followup-<topic>.md`. The rule inside it is the same: additions only, and it
-  names by section what it supersedes.
-- **A new spec names what it obsoletes**, by number and section ("obsoletes 001 §4.6").
-- **Writing a spec is not authorization to implement it.** When the task is a spec, produce only the
-  spec document — no skill, script or workflow edit, not even the one line that looks ready. When it
-  is written, stop and ask.
+- **Write a spec for a change too big to describe in a commit message**, in
+  `specs/NNN-slug/spec.md`: `NNN` counts up from `001`, and the slug names the feature.
+- **Writing a spec is not authorization to implement it.** When the task is a spec, write the
+  document alone, then stop and ask.
+- **While the feature is in progress, edit the spec in place** to keep the plan current. Where later
+  work overturns an important decision, leave a short note saying what it replaced and why.
+- **Once the feature is done, amend the spec by addition.** A feature is done when the commit that
+  lands its last planned phase reaches the default branch. An addition that supersedes a claim names
+  that claim's section, and the section takes a line pointing to the addition. A closed spec may
+  take a follow-up file beside it instead, `followup-<topic>.md`, under the same rule.
+- **A new spec names what it obsoletes**, by number and section: "obsoletes 001 §4.6".
+- **Every reference in a spec resolves for its reader.** A section reference points at a heading in
+  the same file. An external reference is to a public source, pinned where the spec cites a line, a
+  count or a quotation, and has a row in the spec's `External references` section. In a public
+  repository, a private reference is named only in that section, and redacted before the commit
+  carrying it is pushed.
+
+*Maintained by the `spec-driven-development` skill down to this line. This repository's own lines go below.*
+
+In this repository:
+
+- **The default branch is `main`**, so a feature is done when the commit landing its last planned
+  phase reaches `main`.
+- **When the task is a spec, the spec document is the whole change**: no skill, script or workflow
+  edit, not even the one line that looks ready.
+- **§"Public-facing text is hermetic" below applies the reference rules** to every file and commit
+  message here, not only to specs.
 
 ## A skill is written for an agent in someone else's repository
 
@@ -207,6 +227,9 @@ the public internet must be able to resolve every reference in it.
   Before the commit carrying it is pushed, replace the row's name and location with a redaction text
   that starts `*Redacted:*` and says what the reference is and when it was read. Redacting at merge
   is too late: the branch's commits are already public.
+- **Run `scripts/check-skills.sh` before a push that carries a spec.** S15 fails a section
+  reference with no heading to resolve to, and S16 fails an external id with no row or a private row
+  without its redaction.
 
 ## Scope
 

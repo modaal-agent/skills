@@ -12,14 +12,22 @@ follow. Nothing in them assumes Modaal's internal tooling.
 
 ## Skills
 
-No skill directory has landed yet. These are the ones being written, in the order they are planned:
+Four skills, each a directory under `skills/`:
 
 | skill | what it teaches |
 | --- | --- |
-| writing style | prose that states facts and actions: the sentence test, and the LLM-isms to delete — mannered metaphor, aphoristic juxtaposition, negative-space phrasing, the closing paragraph that generalizes the lesson |
-| spec-driven development | the minimal manual flow — write the spec, review it, implement against it, commit under its slug — and the decision-record rule: edit a spec in place while its feature is in progress, and amend it by addition once the feature is done |
-| repository initialization | what a new repository carries on day one: `AGENTS.md` and `CLAUDE.md` as one file in two places, the CI job that holds them identical, `CONTRIBUTING.md`, `SECURITY.md`, the license, the ignore file |
-| git and branch discipline | confirm every commit, never touch the index, what a subject line says, and how a change reaches the default branch |
+| [`writing-style`](skills/writing-style/SKILL.md) | writes twelve rules for prose that states facts and actions into `AGENTS.md` and `CLAUDE.md`, and reviews a draft against them, with searches for filler, buzzwords and the tells of machine-written prose |
+| [`spec-driven-development`](skills/spec-driven-development/SKILL.md) | writes the spec rules into `AGENTS.md` and `CLAUDE.md`, and the minimal manual flow: write the spec, review it, implement against it, commit under its slug. It covers the decision-record rule, which edits a spec in place while its feature is in progress and amends it by addition once the feature is done, and the external references a public repository can publish |
+| [`repository-init`](skills/repository-init/SKILL.md) | what a new repository carries on day one: `AGENTS.md` and `CLAUDE.md` as one file in two places, the check and CI job that hold them identical, `README.md`, `CONTRIBUTING.md`, `SECURITY.md`, the license, the ignore file and `specs/` |
+| [`git-discipline`](skills/git-discipline/SKILL.md) | writes four rules into `AGENTS.md` and `CLAUDE.md`: confirm every commit, leave the index alone, what a subject line says, and how a change reaches the default branch. It records the repository's default branch, merge strategy and branch names with the user |
+
+Three of them, `writing-style`, `git-discipline` and `spec-driven-development`, write a section into
+the adopting repository's `AGENTS.md` and `CLAUDE.md` when invoked. An agent reads that file from
+its first turn, and reads a skill only once something invokes it, so the section is what holds the
+agent to the rules. `repository-init` writes the files the sections go into.
+
+The directory names carry no publisher prefix. If one collides with a skill already in
+`~/.claude/skills/`, rename the directory and the `name:` in its `SKILL.md` together.
 
 This repository follows the rules its skills teach, so [AGENTS.md](AGENTS.md),
 [CONTRIBUTING.md](CONTRIBUTING.md) and the commit history are each a worked example of one of them.
@@ -77,8 +85,9 @@ No channel reads a tag or a release asset. A change is published by landing on `
 | --- | --- |
 | `skills/<name>/SKILL.md` | the resident body an agent reads on invocation |
 | `skills/<name>/references/*.md` | opened per task, not resident |
+| `skills/<name>/scripts/`, `templates/` | a program the body runs, in bash and PowerShell, and the files it writes |
 | `.claude-plugin/` | `marketplace.json` and `plugin.json` — the Claude Code channel |
-| `scripts/check-skills.sh` | the nine checks, and `--self-test` for the checks themselves |
+| `scripts/check-skills.sh` | the skill checks, and `--self-test` for the checks themselves |
 | `.github/workflows/ci.yml` | the `rules` job (`AGENTS.md` == `CLAUDE.md`) and the `skills` job |
 | `specs/NNN-slug/spec.md` | the plan, the measurements and the decisions behind a change |
 

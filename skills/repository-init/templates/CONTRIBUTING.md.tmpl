@@ -1,0 +1,25 @@
+# Contributing
+
+How a change to {{PROJECT}} is made, checked and reviewed.
+
+@claude For the rules an agent working here follows, see [AGENTS.md](AGENTS.md), the same file as
+@claude [CLAUDE.md](CLAUDE.md).
+@!claude For the rules an agent working here follows, see [AGENTS.md](AGENTS.md).
+
+## Making a change
+
+- Branch from `{{DEFAULT_BRANCH}}`, and open a pull request to merge back into it.
+@specs - Write the spec first, in `specs/NNN-slug/spec.md`, when the change is too big to describe in a
+@specs   commit message.
+- TODO(repository-init): the commands a change passes locally before its pull request is opened.
+
+## Checks
+
+@claude - `{{CHECK_COMMAND}}` fails when `CLAUDE.md` differs from `AGENTS.md`. Fix a failure
+@claude   with `cp AGENTS.md CLAUDE.md`.
+- TODO(repository-init): one line per further check CI runs, with the command that runs it locally.
+@license
+@license ## Licensing
+@license
+@license {{LICENSE_NAME}}, inbound = outbound. Opening a pull request means your contribution is
+@license licensed under the terms in [LICENSE](LICENSE).
