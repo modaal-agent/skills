@@ -32,10 +32,17 @@ skills/<name>/
   marketplace.json      # the repository root is the marketplace
   plugin.json           # one plugin, carrying every skill under skills/
 scripts/check-skills.sh # the skill checks, and --self-test for the checks themselves
+scripts/package-skills.sh
+                        # one .zip per skill into dist/, the archives a release carries
 .github/workflows/ci.yml
   rules                 # AGENTS.md and CLAUDE.md are byte-identical
   skills                # scripts/check-skills.sh
+.github/workflows/release.yml
+  checks                # ci.yml's two jobs, at the tagged commit
+  release               # the archives, published as a GitHub release
 specs/NNN-slug/spec.md  # the plan, the measurements and the decisions behind a change
+CHANGELOG.md            # what each release changed
+_assets/                # images README.md shows
 ```
 
 ## Adding a skill
@@ -59,7 +66,9 @@ specs/NNN-slug/spec.md  # the plan, the measurements and the decisions behind a 
    lines below the skill's last line, and run `cp AGENTS.md CLAUDE.md`. [AGENTS.md](AGENTS.md)
    §"The skills are the product" states the rule; `writing-style`, `git-discipline` and
    `spec-driven-development` are the three sections installed today.
-7. **Run the checks**, then open a pull request.
+7. **Add the skill's line under `## Unreleased` in [CHANGELOG.md](CHANGELOG.md)**, as
+   §"Recording a change" below says.
+8. **Run the checks**, then open a pull request.
 
 ## Running the checks
 
@@ -102,15 +111,85 @@ The budgets and the key list live in `scripts/check-skills.sh` as `SKILL_BODY_MA
 
 ## Four channels publish one tree
 
-`skills/` is read directly by every channel README.md lists — the cross-agent `skills` CLI, the
-Claude Code plugin, a hand copy into `~/.claude/skills/`, and packaging for claude.ai and the Skills
-API. None of them reads a tag or a release asset, so a change is published by landing on `main` and
-CI is the only gate in front of it.
+`skills/` is what every channel README.md lists installs: the cross-agent `skills` CLI, the Claude
+Code plugin, a hand copy into `~/.claude/skills/`, and an upload to claude.ai, the Claude desktop app
+or the Skills API. The first three read `main`, so a change reaches them when it lands there, and CI
+runs before it lands. claude.ai and the desktop app take one `.zip` per skill, which a release
+publishes (§"Releasing").
 
 One plugin carries every skill in the repository. A plugin reads the `skills/` directory inside its
 own root and cannot be pointed above it, so a plugin per skill would need a separate nested root per
 skill — and the other three channels want one flat tree. An adopter who wants a single skill copies
 that one directory.
+
+## Releasing
+
+claude.ai and the Claude desktop app install a skill from an uploaded `.zip`, and read neither
+`main` nor a tag. A release is how they receive a change: one archive per skill, published by
+[`release.yml`](.github/workflows/release.yml) when a version tag is pushed. The other three
+channels read `main`, and a release changes nothing for them.
+
+### Recording a change
+
+A pull request that changes a file under `skills/` adds a line under `## Unreleased` in
+[CHANGELOG.md](CHANGELOG.md). The line names the skill, and says what an adopter holding the last
+release has to do. A change no adopter receives, such as an edit to a check or a workflow, gets no
+line.
+
+### What the version number says
+
+A version is `MAJOR.MINOR.PATCH`. Bump the part that matches the largest change under
+`## Unreleased`:
+
+| part | the release | an adopter holding the previous release |
+| --- | --- | --- |
+| MAJOR | removes or renames a skill, or renames the heading of the section a skill writes into `AGENTS.md` and `CLAUDE.md` | deletes the old skill, uploads the new archive, and renames the section in each repository that carries it |
+| MINOR | adds a skill, or adds, removes or changes a rule a skill teaches | uploads the new archive, and invokes the skill again in each repository to update its section |
+| PATCH | changes wording, a reference file, a template or a script, and no rule | uploads the new archive |
+
+While MAJOR is 0, a change that calls for a MAJOR bump bumps MINOR.
+
+### Cutting a release
+
+1. **Write the version heading on `main`.** Rename `## Unreleased` to `## X.Y.Z — YYYY-MM-DD`, with
+   the date you tag, and add an empty `## Unreleased` above it. The edit touches no code, so it may
+   go straight to `main` ([AGENTS.md](AGENTS.md) §"Git and pull requests").
+2. **Tag that commit with the bare version, and push the tag:**
+
+   ```bash
+   git tag X.Y.Z
+   git push origin X.Y.Z
+   ```
+
+   `release.yml` triggers on `X.Y.Z` alone. A tag such as `v0.1.0` or `0.2.0-rc.1` runs nothing.
+3. **Open the run** under the repository's **Actions** tab, and once it passes, the release under
+   **Releases**.
+
+To try an archive in claude.ai before tagging, run `scripts/package-skills.sh` and upload a file
+from `dist/`.
+
+### What `release.yml` checks and publishes
+
+| job | step | fails when |
+| --- | --- | --- |
+| `checks` | `ci.yml`'s `rules` and `skills` jobs, at the tagged commit | a check fails |
+| `release` | the tagged commit is on `main` | the tag points at a commit that is only on another branch |
+| `release` | `CHANGELOG.md` has a section headed `## X.Y.Z` | the section is missing or empty |
+| `release` | `scripts/package-skills.sh dist` writes `<name>.zip` for each skill, and `SHA256SUMS` | a directory under `skills/` holds no `SKILL.md` |
+| `release` | `gh release create` publishes the archives and `SHA256SUMS`, with the section as the release notes | a release for the tag exists already |
+
+Each archive's root entry is the skill directory, so `writing-style.zip` opens to
+`writing-style/SKILL.md`. It holds the files under `skills/<name>/` that git tracks or does not
+ignore. On 2026-09-15, claude.ai accepted a `writing-style.zip` in that layout.
+
+### After a tag is pushed
+
+- **A published release stays.** Adopters may hold its archives, so do not move or delete its tag.
+  Correct a mistake in the next PATCH release.
+- **A tag whose run failed published nothing.** Fix `main`, delete the tag with
+  `git tag -d X.Y.Z && git push origin :refs/tags/X.Y.Z`, and tag the fixed commit.
+- **A fix for a vulnerability** reported through [SECURITY.md](SECURITY.md) gets a PATCH release
+  once it lands on `main`.
 
 ## Licensing
 

@@ -45,7 +45,7 @@ source. Moving either one here would break that comparison.
 
 ## Install
 
-Four channels, over one tree.
+Four channels, over one tree. The first three read `main`; the fourth reads a release.
 
 **1. Any of ~75 agents, through the cross-agent CLI.** `-g` installs for every project on the
 machine instead of this one; `--list` lists without installing.
@@ -69,15 +69,35 @@ cp -r modaal-skills/skills/* ~/.claude/skills/          # every skill, for every
 cp -r modaal-skills/skills/<name> .claude/skills/       # one skill, for this project alone
 ```
 
-**4. claude.ai and the Skills API.** Each skill's frontmatter carries only the Agent Skills
-standard's keys, so `skills/<name>/` packages and uploads unedited.
+**4. claude.ai and the Claude desktop app, one archive per skill.** Neither installs from a
+repository URL; both take a `.zip` upload. Every
+[release](https://github.com/modaal-agent/skills/releases) carries `<name>.zip` for each skill, with
+the skill directory as the archive's root, and a `SHA256SUMS` file listing their checksums.
+
+1. Download the skill's archive from the latest release, such as
+   [`writing-style.zip`](https://github.com/modaal-agent/skills/releases/latest/download/writing-style.zip).
+2. In claude.ai or the desktop app, open **Skills**, and choose **Add** → **Upload skill**.
+3. Drop the archive on **Skill file**, or browse to it. The dialog takes several archives at once.
+4. Check the preview. It shows the `name` and `description` from the skill's `SKILL.md`.
+5. Choose **Save**. A security scan runs on the skill when you save.
+
+<img src="_assets/claude-ai-upload-skill.png" width="560" alt="The Upload skill dialog, with writing-style.zip chosen and the skill's name and description in the preview">
+
+To upload a skill as it stands on `main`, between releases, run `scripts/package-skills.sh` in a
+clone. It writes `dist/<name>.zip` for every skill, in the layout a release carries, and needs `git`
+and `python3`.
+
+The Skills API takes the same directories. Each skill's frontmatter carries only the Agent Skills
+standard's keys, so `skills/<name>/` uploads unedited.
 
 One plugin carries every skill here: a plugin reads the `skills/` directory inside its own root, so
 a plugin per skill would need a separate nested root, and the other three channels want one flat
 tree.
 
-No channel reads a tag or a release asset. A change is published by landing on `main`, and
-[`ci.yml`](.github/workflows/ci.yml) is the gate in front of it.
+Channels 1–3 take a change when it lands on `main`, and [`ci.yml`](.github/workflows/ci.yml) runs the
+checks before it lands. Channel 4 takes it from the next release: pushing a version tag runs
+[`release.yml`](.github/workflows/release.yml), which runs the same checks again and publishes the
+archives. [CHANGELOG.md](CHANGELOG.md) lists what each release changed.
 
 ## Layout
 
@@ -88,12 +108,17 @@ No channel reads a tag or a release asset. A change is published by landing on `
 | `skills/<name>/scripts/`, `templates/` | a program the body runs, in bash and PowerShell, and the files it writes |
 | `.claude-plugin/` | `marketplace.json` and `plugin.json` — the Claude Code channel |
 | `scripts/check-skills.sh` | the skill checks, and `--self-test` for the checks themselves |
+| `scripts/package-skills.sh` | one `.zip` per skill into `dist/`, the archives a release carries |
 | `.github/workflows/ci.yml` | the `rules` job (`AGENTS.md` == `CLAUDE.md`) and the `skills` job |
+| `.github/workflows/release.yml` | on a version tag: `ci.yml`'s jobs again, then a GitHub release carrying the archives |
+| `CHANGELOG.md` | what each release changed |
 | `specs/NNN-slug/spec.md` | the plan, the measurements and the decisions behind a change |
+| `_assets/` | images this README shows |
 
 ## Contributing
 
-[CONTRIBUTING.md](CONTRIBUTING.md) covers how a skill is added and what the checks hold it to.
+[CONTRIBUTING.md](CONTRIBUTING.md) covers how a skill is added, what the checks hold it to, and how
+a version is released.
 [AGENTS.md](AGENTS.md) — the same file as [CLAUDE.md](CLAUDE.md) — carries the rules for an agent
 working in this repository. Vulnerabilities go through [SECURITY.md](SECURITY.md).
 
