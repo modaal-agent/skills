@@ -1,7 +1,7 @@
 # 001 — Four practice skills: writing style, spec-driven development, repository initialization, git discipline
 
-**Status:** Written 2026-09-11, revised in place 2026-09-14. Phases 1–6 landed on
-`001-practice-skills` 2026-09-14 (§9.1). The feature is done when the phase 6 commit reaches `main`
+**Status:** Written 2026-09-11, revised in place 2026-09-14 and 2026-09-15. Phases 1–6 landed on
+`001-practice-skills` 2026-09-14 (§9.1), and their token cost was measured 2026-09-15 (§9.2). The feature is done when the phase 6 commit reaches `main`
 (§4.4); from then on this spec takes additions only. **Baseline:** `main` at `1753a20`. **Obsoletes:** nothing.
 
 **Relates to:**
@@ -1090,6 +1090,56 @@ keeps the README's closing edits.
 | 5 | 2026-09-14: `skills/spec-driven-development/SKILL.md` (150 lines), `references/spec-skeleton.md` (178); the 20-line block in `AGENTS.md` and `CLAUDE.md`, replacing "Specs are a decision record", with this repository's three lines below it; the README row | invented examples, commit-pinned line references and the review checklist (§4.2); §4.4's `AGENTS.md` section renamed to "Specs" |
 | 6 | 2026-09-14: S10, S11, S15 and S16 in `scripts/check-skills.sh`, with five seeded violations; the README's closing paragraphs on how the three practice skills work and on renaming a colliding directory; `CONTRIBUTING.md` §"Adding a skill" step 6, and its check table; the S15 and S16 line in `AGENTS.md` and `CLAUDE.md`; `ci.yml`'s `skills` comment | S10's reading of a skill reference, and the two reworded `repository-init` passages (§8.2); S11 over templates and scripts (§8.3); how S15 resolves a named reference (§8.7); §12.5 resolved |
 
+### 9.2 What the four bodies cost in context, measured 2026-09-15
+
+E20 sets two limits on invoked skills when auto-compaction runs. Claude Code re-attaches "the most
+recent invocation of each skill after the summary, keeping the first 5,000 tokens of each", and
+"Re-attached skills share a combined budget of 25,000 tokens". A body over 5,000 tokens loses its
+end at the first compaction; for `repository-init` the end is
+`skills/repository-init/SKILL.md` §"What not to assume".
+
+Measured at `ea91dfa`, with Claude Code 2.1.271 and `claude-opus-5`:
+
+| skill | body lines | body characters | tokens, body | tokens, rendered | left under 5,000 |
+| --- | --- | --- | --- | --- | --- |
+| `writing-style` | 101 | 5,911 | 2,017 | 2,080 | 2,920 |
+| `git-discipline` | 103 | 6,717 | 2,298 | 2,354 | 2,646 |
+| `spec-driven-development` | 145 | 9,396 | 3,112 | 3,175 | 1,825 |
+| `repository-init` | 196 | 11,575 | 4,468 | 4,612 | 388 |
+| all four | 545 | 33,599 | 11,895 | 12,221 | 12,779 of 25,000 |
+
+How each column was measured:
+
+- **Body:** `SKILL.md` below its frontmatter.
+- **Tokens, body:** one turn run from an empty directory, with the body as the prompt after a
+  one-line preamble telling the model to reply "OK":
+  `printf '%s' "$PROMPT" | claude -p --output-format json --max-turns 1 --tools ""`. `--tools ""`
+  disables every built-in tool, per `claude --help`; E28 documents the other flags. The count is the
+  JSON's `usage.input_tokens`, `cache_creation_input_tokens` and `cache_read_input_tokens` added
+  together, less the same sum for the preamble alone. Two control runs gave 2,770 and 2,771, so
+  each figure is exact to one token.
+- **Tokens, rendered:** the same run over the body as Claude Code renders it on invocation. The
+  first line is `Base directory for this skill: <dir>`, and each `${CLAUDE_SKILL_DIR}` becomes that
+  directory. `<dir>` was a 100-character path in the plugin cache's form,
+  `/Users/<name>/.claude/plugins/cache/modaal-skills/modaal-skills/<12-hex version>/skills/<skill>`.
+  `repository-init` alone uses the variable, four times, so its count grows by 144 tokens and the
+  others' by 56 to 63. E20 does not document the header line; its wording was copied from a Claude
+  Code session.
+- A skill invoked by slash command under `claude -p --plugin-dir` would show the rendering itself.
+  The first such run, `writing-style`, had not returned after seven minutes and was stopped.
+
+**What `claude plugin details` reports.** Run with `--plugin-dir` at this tree, its projected cost
+puts the four bodies at ~2.1k, ~2.4k, ~3.3k and ~4.1k tokens, and the four descriptions at ~916
+tokens in every session. Its `repository-init` figure is 368 tokens below the measured body, about
+that body's whole margin, so size a body against the measured count.
+
+**The descriptions** are 581, 642, 787 and 566 characters, in the table's order: under E20's
+1,536-character truncation in the skill listing, and under S4's 1,024.
+
+**What follows.** Each body fits the 5,000-token limit, and the four together use 12,221 of the
+25,000. `repository-init` has the least room: 388 tokens, about 16 lines at its 23.5 tokens a line.
+No check holds the limit, and S5's 400-line budget allows about twice it (§12.14).
+
 ---
 
 ## 10. Decisions
@@ -1321,6 +1371,15 @@ answering 403 to a plain client, so it would run in a separate job that does not
 an answer before phase 6. **Resolved 2026-09-14:** (a) and (b), specified as S15 (§8.7) and S16
 (§8.8), landing in phase 6; (c) is not planned.
 
+**12.14 — Does a check hold the 5,000-token limit on a re-attached skill?** §9.2 measured
+`repository-init`'s rendered body at 4,612 tokens, 388 under the limit. S5's 400-line
+`SKILL_BODY_MAX` allows about 9,400 tokens at that body's 23.5 tokens a line. An exact count needs a
+model call, and the `skills` job makes none. Candidates: (a) a character budget per body in
+`scripts/check-skills.sh`, set from the densest body measured, 2.59 characters a token, which puts
+5,000 tokens at about 12,900 characters; it holds only while no body is denser. (b) §9.2's
+measurement, rerun by hand in each pull request that edits a `SKILL.md` and recorded in the spec
+that carries the change. Proposed: (a), and (b) as well for a body over 11,000 characters.
+
 ---
 
 ## 13. Public-facing text is hermetic
@@ -1411,8 +1470,8 @@ review.
 ## 14. External references
 
 Every reference this spec makes to something outside this repository. E1–E15, E21 and E23–E27
-were read on 2026-09-14. E16–E20 were read on 2026-09-11, and E16–E18 again on 2026-09-14 for their
-HEADs. E22 was read on 2026-09-14. Where §1 read a repository without recording a commit, the pin is
+were read on 2026-09-14. E16–E20 were read on 2026-09-11, E16–E18 again on 2026-09-14 for their
+HEADs, and E20 again on 2026-09-15 for §9.2. E22 was read on 2026-09-14, and E28 on 2026-09-15. Where §1 read a repository without recording a commit, the pin is
 that repository's HEAD on 2026-09-14, and §13.1 records the values that differ.
 
 | id | reference | public | URL and pin | cited in |
@@ -1436,7 +1495,7 @@ that repository's HEAD on 2026-09-14, and §13.1 records the values that differ.
 | E17 | `modaal-agent/swift-sourcery-templates`: `AGENTS.md`, `specs/`, `LICENSE.txt`, `.claude-plugin/plugin.json`, `skills/swift-sourcery-mocks/SKILL.md`, `.github/workflows/ci.yml` | yes | https://github.com/modaal-agent/swift-sourcery-templates; §1 read the working `master`, unpinned; HEAD on 2026-09-14 `d796b18` | Relates to, §0, §1.2–§1.6, §13.1, D18 |
 | E18 | `modaal-agent/duet-tutorials`: `CONTRIBUTING.md`, `LICENSE`, `SECURITY.md` | yes | https://github.com/modaal-agent/duet-tutorials; §1 read the working `main`, unpinned; HEAD on 2026-09-14 `0d765d9` | Relates to, §1.4, §1.5, D6, §13.1 |
 | E19 | github/spec-kit, the `specify init` command and its flags | yes | https://github.com/github/spec-kit; unpinned | §0, §5.5, D11, §12.8 |
-| E20 | Claude Code skills documentation: `${CLAUDE_SKILL_DIR}`, `allowed-tools`, `shell` | yes | https://code.claude.com/docs/en/skills; unversioned | §1.7, §5.5, D10 |
+| E20 | Claude Code skills documentation: `${CLAUDE_SKILL_DIR}`, `allowed-tools`, `shell`; the first 5,000 tokens of each invoked skill re-attached after auto-compaction, within 25,000 tokens together; the 1,536-character truncation of a description in the skill listing | yes | https://code.claude.com/docs/en/skills; unversioned | §1.7, §5.5, §9.2, D10 |
 | E21 | The cross-agent `skills` CLI, npm package `skills` | yes | https://github.com/vercel-labs/skills (from `npm view skills repository.url`); unpinned | §12.6 |
 | E22 | GitHub Actions runner images: the README's label table, and the Ubuntu 24.04 software list | yes | https://github.com/actions/runner-images/blob/main/README.md; https://github.com/actions/runner-images/blob/main/images/ubuntu/Ubuntu2404-Readme.md, image version `20260907.300.1`; read 2026-09-14 | §8.4, §12.9 |
 | E23 | GitHub Docs, "Removing sensitive data from a repository" | yes | https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/removing-sensitive-data-from-a-repository; unversioned | §13.1, D16 |
@@ -1444,3 +1503,4 @@ that repository's HEAD on 2026-09-14, and §13.1 records the values that differ.
 | E25 | Claude Code documentation, "Settings files and precedence": `.claude/settings.local.json` as personal, per-project settings | yes | https://code.claude.com/docs/en/settings; unversioned, read 2026-09-14 | §5.3 |
 | E26 | Apache License, Version 2.0, plain text | yes | https://www.apache.org/licenses/LICENSE-2.0.txt; SHA-256 `cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30`, fetched 2026-09-14 | §5.3 |
 | E27 | Creative Commons Attribution-ShareAlike 4.0 International, legal code: §1(a), §2(a)(2), §3(b), §8(a) | yes | https://creativecommons.org/licenses/by-sa/4.0/legalcode.en; the 4.0 text is fixed, read 2026-09-14 | §12.11 |
+| E28 | Claude Code CLI reference: `--print`, `--output-format`, `--max-turns`, `--plugin-dir` | yes | https://code.claude.com/docs/en/cli-reference; unversioned, read 2026-09-15; §9.2's runs used Claude Code 2.1.271 | §9.2 |
